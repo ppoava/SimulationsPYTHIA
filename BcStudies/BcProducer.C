@@ -76,8 +76,8 @@ int BcProducer() {
 	tree->Branch("MULTIPLICITY",&MULTIPLICITY,"x/I");
 	TH1D* hMULTIPLICITY = new TH1D("hMULTIPLICITY","Multiplicity",301,-0.5,300.5);
 	TH1D* hidBeauty = new TH1D("hidBeauty","PDG Codes for Beauty hadrons",12000,-6000,6000);
-	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum B_{c}ˆ{+}",100,0,20);
-	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum B_{c}ˆ{-}",100,0,20);
+	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum Bˆ{+}_{c}",100,0,20);
+	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum Bˆ{-}_{c}",100,0,20);
 	TH1D* hPtTrigger = new TH1D("hPtTrigger","p_{T} for trigger B^{+} ",50,0,10);
 	TH1D* hPtAssociate = new TH1D("hPtAssociate", "p_{T} for associate B^{+}",50,0,10);
 	TH1D* hDeltaPhiBB = new TH1D("hDeltaPhiBB","B^{+}B^{-} correlations",100,-PI/2,3*PI/2);

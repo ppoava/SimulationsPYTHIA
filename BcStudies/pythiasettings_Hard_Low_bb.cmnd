@@ -6,7 +6,7 @@
 
 
 ! Number of events
-Main:numberOfEvents = 10
+Main:numberOfEvents = 10000
 
 ! More information about these commands can be found on https://pythia.org/latest-manual/MainProgramSettings.html
 Init:showMultipartonInteractions = off
@@ -30,7 +30,7 @@ Tune:pp = 14 					! tune 14 = MONASH
 ! Hard QCD processes: https://pythia.org//latest-manual/QCDHardProcesses.html
 
 ! HardQCD:all = on
-! HardQCD:hardccbar = on
+HardQCD:hardccbar = on
 HardQCD:hardbbbar = on
 
 ! HardQCD:gg2gg = on
