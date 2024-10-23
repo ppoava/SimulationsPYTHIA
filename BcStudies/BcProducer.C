@@ -30,40 +30,15 @@
 using namespace std;
 using namespace Pythia8;
 
-// Simple function that checks if a particle has any beauty content
-bool IsBeauty( Int_t particlepdg) {
-	Int_t pdg = abs(particlepdg);
-	pdg /= 10; // Last digit does not have to do with quark content
-	if(pdg % 10 == 5) return true; // 3rd quark
-	pdg /= 10;
-	if(pdg % 10 == 5) return true; // 2nd quark
-	pdg /= 10;
-	if(pdg % 10 == 5) return true; // 1st quark
-	return false;
-	}
-
-// Returns delta phi in range -pi/2 3pi/2
-Double_t DeltaPhi(Double_t phi1, Double_t phi2) {
-	return fmod(phi1-phi2+2.5*PI,2*PI)-0.5*PI;
-	}
-
-int main(int argc, char** argv) {
-
-	if(argc != 2) {			
-	        cout<<"Error in the number of arguments provided"<<endl;
-		cout<<"Provide only the filepath/name."<<endl;
-		cout<<"Terminating program"<<endl;
-		return 0;
-	}
-
+int BcProducer() {
 	// For larger simulations it is essential to know the duration of the execution of this script
 	// Start time here
 	auto start = chrono::high_resolution_clock::now();
 	
 	// Create output file
-	TFile* output = new TFile(argv[1],"CREATE");
+	TFile* output = new TFile("output.root","CREATE");
 	if(!output->IsOpen()){
-		cout<<"Error: File "<<argv[1]<<"already exists terminating program!"<<endl;
+		cout<<"Error: File "<<"output.root"<<"already exists terminating program!"<<endl;
 		return 1;
 	}
 	
@@ -109,7 +84,7 @@ int main(int argc, char** argv) {
 	const Double_t etamax = 4.; // maximum pseudorapidity (absolute value)
 	
 	// Get PYTHIA
-	Pythia pythia;
+	Pythia8::Pythia pythia;
 	
 	// Simulation settings from pythiasettings_Hard_Low_bb.cmnd
 	// The settings used are documented in that file
@@ -169,7 +144,7 @@ int main(int argc, char** argv) {
 			  }
 			}
 			
-			if(!IsBeauty(id)) continue;
+			if(id != 521) continue;
 				idBeauty = id;
 				hidBeauty->Fill((Double_t) id);
 				beautiness++;
@@ -198,10 +173,8 @@ int main(int argc, char** argv) {
 						if(associate_pT < pTmin  || abs(associate_eta) > etamax) continue;
 						if(associate_id == -521) { // B- correlation
 							pTTrigger = pT;
-							DeltaPhiBB = DeltaPhi(phi,particleB.phi());
 							hPtTrigger->Fill(pT);
-							hPtAssociate->Fill(associate_pT);
-							hDeltaPhiBB->Fill(DeltaPhiBB);					
+							hPtAssociate->Fill(associate_pT);				
 						}	
 						else continue;	
 					} // End of B meson triger particle loop.
