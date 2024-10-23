@@ -6,7 +6,7 @@
 
 
 ! Number of events
-Main:numberOfEvents = 10000
+Main:numberOfEvents = 1000000
 
 ! More information about these commands can be found on https://pythia.org/latest-manual/MainProgramSettings.html
 Init:showMultipartonInteractions = off
@@ -54,22 +54,6 @@ ParticleDecays:tau0Max = 0.01			! tau0Max is suppressing the weak decays so the 
 ! We shut this off in order to analyse production from decay and instead manually define which particles to `make stable`
 ! Most particles are unstable by default in PYTHIA, so only mayDecay = off is meaningful in the lines below
 
-521:mayDecay = off				! B+
--521:mayDecay = off				! B-
-511:mayDecay = off				! B0
--511:mayDecay = off				! B0bar
-531:mayDecay = off   	 			! Bs
--531:mayDecay = off				! Bsbar
-541:mayDecay = off    				! Bc+
+443:mayDecay = off				! J/ψ
+541:mayDecay = off    			! Bc+
 -541:mayDecay = off				! Bc-
-
-5122:mayDecay = off   				! Λb
--5122:mayDecay = off 				! Λbbar
-
-5112:mayDecay = off				! Sigmab-
--5112:mayDecay = off				! Sigmab-bar
-5212:mayDecay = off				! Sigmab0
--5212:mayDecay = off				! Sigmab0bar
-5222:mayDecay = off				! Sigmab+
--5222:mayDecay = off				! Sigmab+bar
-

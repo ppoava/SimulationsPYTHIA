@@ -76,8 +76,8 @@ int BcProducer() {
 	tree->Branch("MULTIPLICITY",&MULTIPLICITY,"x/I");
 	TH1D* hMULTIPLICITY = new TH1D("hMULTIPLICITY","Multiplicity",301,-0.5,300.5);
 	TH1D* hidBeauty = new TH1D("hidBeauty","PDG Codes for Beauty hadrons",12000,-6000,6000);
-	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum Bˆ{+}_{c}",100,0,20);
-	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum Bˆ{-}_{c}",100,0,20);
+	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum B^{+}_{c}",100,0,20);
+	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum B^{-}_{c}",100,0,20);
 	TH1D* hPtTrigger = new TH1D("hPtTrigger","p_{T} for trigger B^{+} ",50,0,10);
 	TH1D* hPtAssociate = new TH1D("hPtAssociate", "p_{T} for associate B^{+}",50,0,10);
 	TH1D* hDeltaPhiBB = new TH1D("hDeltaPhiBB","B^{+}B^{-} correlations",100,-PI/2,3*PI/2);
@@ -156,41 +156,6 @@ int BcProducer() {
 				hPtBcM->Fill(pT);
 			}
 			
-			if(id != 521) continue;
-				idBeauty = id;
-				hidBeauty->Fill((Double_t) id);
-				beautiness++;
-				// Filling vectors
-				vID.push_back(id);
-				vPt.push_back(pT);
-				vEta.push_back(eta);
-				vY.push_back(y);
-				vPhi.push_back(phi);
-				vCharge.push_back(charge);
-				vStatus.push_back(status);
-				vMother1.push_back(mother);
-				vMotherID.push_back(motherID);
-				
-				// Creating B+B- correlation plots as check
-				if(id == 521) { // B+ meson triger
-
-					for(int jPart = 0; jPart<nPart; jPart++) {
-						const Particle particleB = pythia.event[jPart];
-
-						if(jPart == iPart) continue; // So we do not correlate a particle with itself.
-						Int_t associate_id = particleB.id();
-						Double_t associate_pT = particleB.pT();
-						Double_t associate_eta = particleB.eta();
-
-						if(associate_pT < pTmin  || abs(associate_eta) > etamax) continue;
-						if(associate_id == -521) { // B- correlation
-							pTTrigger = pT;
-							hPtTrigger->Fill(pT);
-							hPtAssociate->Fill(associate_pT);				
-						}	
-						else continue;	
-					} // End of B meson triger particle loop.
-				} // End of B meson triger
 		} // 1st particle loop
 
 		hMULTIPLICITY->Fill((Double_t) MULTIPLICITY);
