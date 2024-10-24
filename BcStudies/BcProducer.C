@@ -188,32 +188,38 @@ int BcProducer() {
 			if(motherID == 541 && id == 14) { // found muon neutrino (B_cˆ{+} signal)
 				hPtNeutrinoS->Fill(pT);
 				hEtaNeutrinoS->Fill(eta);
+				hPhiNeutrinoS->Fill(phi);
 			}
 
 			if(motherID == -541 && id == -14) { // found muon neutrino (B_cˆ{-} signal)
 				hPtNeutrinoBarS->Fill(pT);
 				hEtaNeutrinoBarS->Fill(eta);
+				hPhiNeutrinoBarS->Fill(phi);
 			}
 
 			if(motherID == 541 && id == 443) { // found J/psi (B_cˆ{+} signal)
 				hPtJpsiS->Fill(pT);
 				hEtaJpsiS->Fill(eta);
+				hPhiJpsiS->Fill(phi);
 			}
 			
 			// Background particles
 			if(id == 14) { // found muon neutrino (B_cˆ{+} background)
 				hPtNeutrinoB->Fill(pT);
 				hEtaNeutrinoB->Fill(eta);
+				hPhiNeutrinoB->Fill(phi);
 			}
 
 			if(id == -14) { // found muon neutrino (B_cˆ{-} background)
 				hPtNeutrinoBarB->Fill(pT);
 				hEtaNeutrinoBarB->Fill(eta);
+				hPhiNeutrinoBarB->Fill(phi);
 			}
 
 			if(id == 443) { // found J/psi (B_cˆ{+} signal)
 				hPtJpsiB->Fill(pT);
 				hEtaJpsiB->Fill(eta);
+				hPhiJpsiB->Fill(phi);
 			}
 
 		} // 1st particle loop
