@@ -75,17 +75,27 @@ int BcProducer() {
 	tree->Branch("MOTHERID",&vMotherID);
 	tree->Branch("MULTIPLICITY",&MULTIPLICITY,"x/I");
 	TH1D* hMULTIPLICITY = new TH1D("hMULTIPLICITY","Multiplicity",301,-0.5,300.5);
-	TH1D* hidBeauty = new TH1D("hidBeauty","PDG Codes for Beauty hadrons",12000,-6000,6000);
-	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum B^{+}_{c}",100,0,20);
-	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum B^{-}_{c}",100,0,20);
-	TH1D* hPtTrigger = new TH1D("hPtTrigger","p_{T} for trigger B^{+} ",50,0,10);
-	TH1D* hPtAssociate = new TH1D("hPtAssociate", "p_{T} for associate B^{+}",50,0,10);
-	TH1D* hDeltaPhiBB = new TH1D("hDeltaPhiBB","B^{+}B^{-} correlations",100,-PI/2,3*PI/2);
 	TH1D* hBeautyPart = new TH1D("hBeautyPart", "Beauty Particles Per Event",200,-0.5,200.5);
-	
+	// TH1D* hidBeauty = new TH1D("hidBeauty","PDG Codes for Beauty hadrons",12000,-6000,6000);
+
+	// Bc meson
+	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum B^{+}_{c}",50,0,10);
+	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum B^{-}_{c}",50,0,10);
+
+	// Neutrinos
+	TH1D* hPtNeutrinoS = new TH1D("hPtNeutrinoS","pT spectrum neutrino signal",50,0,10); // muon neutrino
+	TH1D* hPtNeutrinoBarS = new TH1D("hPtNeutrinoBarS","pT spectrum anti-neutrino signal",50,0,10); // muon anti-neutrino
+	TH1D* hPtNeutrinoB = new TH1D("hPtNeutrinoB","pT spectrum neutrino background",50,0,10); // muon neutrino
+	TH1D* hPtNeutrinoBarB = new TH1D("hPtNeutrinoBarB","pT spectrum anti-neutrino background",50,0,10); // muon anti-neutrino
+
+	// J/psi
+	TH1D* hPtJpsiS = new TH1D("hPtJpsiS","pT spectrum J/psi signal",50,0,10);
+	TH1D* hPtJpsiB = new TH1D("hPtJpsiB","pT spectrum J/psi background",50,0,10);
+
 	// Kinematics constraints
 	const Double_t pTmin = 0.15; // minimum pT
-	const Double_t etamax = 4.; // maximum pseudorapidity (absolute value)
+	const Double_t etaMin = 2.5; // muon acceptance in ALICE
+	const Double_t etaMax = 4.;
 	
 	// Get PYTHIA
 	Pythia8::Pythia pythia;
@@ -138,7 +148,7 @@ int BcProducer() {
 			motherID = static_cast<Double_t> (pythia.event[particle.mother1()].id());
 			
 			// Kinematics check
-			if(pT < pTmin || abs(eta) > etamax ) continue;
+			if(pT < pTmin || eta < etaMin || eta > etaMax) continue;
 			
 			// Multiplicity is defined as the number of charged primary particles in the final state of the event
 			// Particles to be considered primaries here are: electron, muon, pion, kaon, proton
@@ -155,7 +165,33 @@ int BcProducer() {
 			if(id == -541) { // found a B_cˆ{-}
 				hPtBcM->Fill(pT);
 			}
+
+			// Signal particles
+			if(motherID == 541 && id == 14) { // found muon neutrino (B_cˆ{+} signal)
+				hPtNeutrinoS->Fill(pT);
+			}
+
+			if(motherID == -541 && id == -14) { // found muon neutrino (B_cˆ{-} signal)
+				hPtNeutrinoBarS->Fill(pT);
+			}
+
+			if(motherID == 541 && id == 443) { // found J/psi (B_cˆ{+} signal)
+				hPtJpsiS->Fill(pT);
+			}
 			
+			// Background particles
+			if(id == 14) { // found muon neutrino (B_cˆ{+} background)
+				hPtNeutrinoB->Fill(pT);
+			}
+
+			if(id == -14) { // found muon neutrino (B_cˆ{-} background)
+				hPtNeutrinoBarB->Fill(pT);
+			}
+
+			if(id == 443) { // found J/psi (B_cˆ{+} signal)
+				hPtJpsiB->Fill(pT);
+			}
+
 		} // 1st particle loop
 
 		hMULTIPLICITY->Fill((Double_t) MULTIPLICITY);
