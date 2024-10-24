@@ -1,0 +1,55 @@
+Executable = "/alice/cern.ch/user/a/aliprod/LHC23d1/o2_o2dpg_sim_anchored_dev2.sh";
+
+JobTag = 
+{
+  "comment:pp, 13.6 TeV - prompt Jpsi and Psi2S + MB gap, pp@13.6 TeV production, anchored to apass6 of 2022 data, fwd rapidity"
+};
+
+Packages = 
+{
+  "VO_ALICE@O2PDPSuite::async-async-20240115.4.trd-slc7-alidist-O2PDPSuite-daily-20231208-0100-1",
+  "VO_ALICE@jq::v1.6-3"
+};
+ 
+InputFile = 
+{
+  "LF:/alice/cern.ch/user/j/jcastill/testAnchorPrompt/anchorMC_promptQuarkonia.sh"
+};
+
+####
+SplitArguments = "env NTIMEFRAMES=2 NSIGEVENTS=20 SPLITID=#alien_counter# PRODSPLIT=2 CYCLE=0 ./anchorMC_promptQuarkonia.sh --nevents 400";
+
+OutputDir = "/alice/cern.ch/user/j/jcastill/testAnchorPrompt/528531/#alien_counter_03i#";
+
+Split = "production:1-2";
+ 
+ValidationCommand = "/alice/cern.ch/user/a/aliprod/LHC21i1/validation.sh";
+
+Output = 
+{
+  "log_archive.zip:stderr,stdout,pipeline_action*.log,pipeline_metric*.log,*.json,timestampsampling*.log,async_pass_log*.log@disk=1",
+  "logs*.zip@disk=2",
+  "AO2D.root@disk=2",
+  "qc_archive.zip:QC/*.root@ALICE::CERN::EOS,disk=1",
+  "qc_log_archive.zip:QC/*.log@disk=1",
+  "analysis_archive.zip:AnalysisResults*.root,Analysis/*/AnalysisResults*.root@disk=1",
+  "debug_log_archive*.tgz@disk=1"
+  "debug_full_archive*.tgz@disk=1"
+};
+
+OutputErrorE = 
+{
+  "logs*.zip@disk=2",
+  "log_archive.zip:stderr,stdout,pipeline_action*.log,pipeline_metric*.log,*.json,timestampsampling*.log,async_pass_log*.log@disk=1",
+  "qc_log_archive.zip:QC/*.log@disk=1",
+  "debug_log_archive*.tgz@disk=1"
+};
+
+Requirements = member(other.GridPartitions,"multicore_8");
+
+TTL = "82000";
+
+Price = "4";
+
+CPULimit="8";
+CPUCores = "8";
