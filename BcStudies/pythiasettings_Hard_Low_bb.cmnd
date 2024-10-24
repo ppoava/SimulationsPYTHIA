@@ -6,7 +6,7 @@
 
 
 ! Number of events
-Main:numberOfEvents = 1000000
+Main:numberOfEvents = 100000
 
 ! More information about these commands can be found on https://pythia.org/latest-manual/MainProgramSettings.html
 Init:showMultipartonInteractions = off
@@ -48,12 +48,14 @@ PhaseSpace:pTHatMin = 1.
 
 ! tau0Max = 0.01 ~ 1e-14 s
 ! typical decay time for b ~ 1e-13 s
-ParticleDecays:limitTau0 = on			! Particles with tau0 > tau0Max are not allowed to decay.
-ParticleDecays:tau0Max = 0.01			! tau0Max is suppressing the weak decays so the produced beauty particles will not decay
+! ParticleDecays:limitTau0 = on			! Particles with tau0 > tau0Max are not allowed to decay.
+! ParticleDecays:tau0Max = 0.01			! tau0Max is suppressing the weak decays so the produced beauty particles will not decay
 			 			! This tau0max is expressed in mm/c which is around 1e-12 seconds
 ! We shut this off in order to analyse production from decay and instead manually define which particles to `make stable`
 ! Most particles are unstable by default in PYTHIA, so only mayDecay = off is meaningful in the lines below
 
+14:mayDecay = off				! ν
+-14:mayDecay = off				! anti ν
 443:mayDecay = off				! J/ψ
-541:mayDecay = off    			! Bc+
--541:mayDecay = off				! Bc-
+! 541:mayDecay = off    			! Bc+
+! -541:mayDecay = off				! Bc-
