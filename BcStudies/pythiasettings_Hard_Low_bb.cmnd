@@ -30,7 +30,7 @@ Tune:pp = 14 					! tune 14 = MONASH
 ! Hard QCD processes: https://pythia.org//latest-manual/QCDHardProcesses.html
 
 ! HardQCD:all = on
-HardQCD:hardccbar = on
+! HardQCD:hardccbar = on
 HardQCD:hardbbbar = on
 
 ! HardQCD:gg2gg = on
