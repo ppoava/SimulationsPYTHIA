@@ -113,7 +113,7 @@ int BcProducer() {
 	// Kinematics constraints
 	const Double_t pTmin = 0.15; // minimum pT
 	const Double_t etaMin = -4; // muon acceptance in ALICE = (2.5,4)
-	const Double_t etaMax = 4.;
+	const Double_t etaMax = 4;
 	
 	// Get PYTHIA
 	Pythia8::Pythia pythia;
