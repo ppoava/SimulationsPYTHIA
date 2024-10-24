@@ -89,8 +89,8 @@ int main() {
 	TH1D* hEtaNeutrinoS = new TH1D("hEtaNeutrinoS","eta spectrum neutrino signal",50,-4,4); 
 	TH1D* hEtaNeutrinoBarS = new TH1D("hEtaNeutrinoBarS","eta spectrum anti-neutrino signal",50,-4,4);
 
-	TH1D* hPhiNeutrinoS = new TH1D("hPhiNeutrinoS","phi spectrum neutrino signal",50,0,2*PI); 
-	TH1D* hPhiNeutrinoBarS = new TH1D("hPhiNeutrinoBarS","phi spectrum anti-neutrino signal",50,0,2*PI);  
+	TH1D* hPhiNeutrinoS = new TH1D("hPhiNeutrinoS","phi spectrum neutrino signal",50,-PI,PI); 
+	TH1D* hPhiNeutrinoBarS = new TH1D("hPhiNeutrinoBarS","phi spectrum anti-neutrino signal",50,-PI,PI);  
 
 	TH1D* hPtNeutrinoB = new TH1D("hPtNeutrinoB","pT spectrum neutrino background",50,0,10); 
 	TH1D* hPtNeutrinoBarB = new TH1D("hPtNeutrinoBarB","pT spectrum anti-neutrino background",50,0,10); 
@@ -98,17 +98,17 @@ int main() {
 	TH1D* hEtaNeutrinoB = new TH1D("hEtaNeutrinoB","eta spectrum neutrino background",50,-4,4); 
 	TH1D* hEtaNeutrinoBarB = new TH1D("hEtaNeutrinoBarB","eta spectrum anti-neutrino background",50,-4,4); 
 
-	TH1D* hPhiNeutrinoB = new TH1D("hPhiNeutrinoB","phi spectrum neutrino background",50,0,2*PI); 
-	TH1D* hPhiNeutrinoBarB = new TH1D("hPhiNeutrinoBarB","phi spectrum anti-neutrino background",50,0,2*PI);  
+	TH1D* hPhiNeutrinoB = new TH1D("hPhiNeutrinoB","phi spectrum neutrino background",50,-PI,PI); 
+	TH1D* hPhiNeutrinoBarB = new TH1D("hPhiNeutrinoBarB","phi spectrum anti-neutrino background",50,-PI,PI);  
 
 	// J/psi
 	TH1D* hPtJpsiS = new TH1D("hPtJpsiS","pT spectrum J/psi signal",50,0,10);
 	TH1D* hEtaJpsiS = new TH1D("hEtaJpsiS","eta spectrum J/psi signal",50,-4,4);
-	TH1D* hPhiJpsiS = new TH1D("hPhiJpsiS","phi spectrum J/psi signal",50,0,2*PI);
+	TH1D* hPhiJpsiS = new TH1D("hPhiJpsiS","phi spectrum J/psi signal",50,-PI,PI);
 
 	TH1D* hPtJpsiB = new TH1D("hPtJpsiB","pT spectrum J/psi background",50,0,10);
 	TH1D* hEtaJpsiB = new TH1D("hEtaJpsiB","eta spectrum J/psi background",50,-4,4);
-	TH1D* hPhiJpsiB = new TH1D("hPhiJpsiB","phi spectrum J/psi background",50,0,2*PI);
+	TH1D* hPhiJpsiB = new TH1D("hPhiJpsiB","phi spectrum J/psi background",50,-PI,PI);
 
 	// Kinematics constraints
 	const Double_t pTmin = 0.15; // minimum pT
