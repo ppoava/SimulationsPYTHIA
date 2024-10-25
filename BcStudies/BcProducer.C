@@ -48,8 +48,8 @@ int BcProducer() {
 	TTree *tree = new TTree("tree","bbbar correlations");
 	
 	// Define variables that will be generated
-	Double_t pT, eta, y, phi, pTTrigger, pTAssociate, charge, DeltaPhiBB, status, mother, motherID;
-	Int_t  id, idBeauty, MULTIPLICITY, nEvents, beautiness;
+	Double_t pT, eta, y, phi, pTTrigger, pTAssociate, charge, DeltaPhiBB, status, mother, motherID, grandMother, grandMotherID;
+	Int_t  id, idBeauty, MULTIPLICITY, nEvents, beautiness, motherIndex, grandMotherIndex;
 
 	// Define vectors that contain event-level information on the particles
 	vector<Int_t> vID;
@@ -59,8 +59,12 @@ int BcProducer() {
 	vector<Double_t> vPhi;
 	vector<Double_t> vCharge;
 	vector<Double_t> vStatus;
+	// vector<Double_t> vMotherIndex;
+	// vector<Double_t> vGrandMotherIndex;
 	vector<Double_t> vMother1;
+	vector<Double_t> vGrandMother1;
 	vector<Double_t> vMotherID;
+	vector<Double_t> vGrandMotherID;
 	
 	// Setting up tree branches
 	// The histograms are used to provide quick checks on the output
@@ -71,8 +75,12 @@ int BcProducer() {
 	tree->Branch("PHI",&vPhi);
 	tree->Branch("CHARGE",&vCharge);
 	tree->Branch("STATUS",&vStatus);
+	// tree->Branch("MOTHERINDEX",&vMotherIndex);
+	// tree->Branch("GRANDMOTHERINDEX",&vGrandMotherIndex);
 	tree->Branch("MOTHER",&vMother1);
+	tree->Branch("GRANDMOTHER",&vGrandMother1);
 	tree->Branch("MOTHERID",&vMotherID);
+	tree->Branch("GRANDMOTHERID",&vGrandMotherID);
 	tree->Branch("MULTIPLICITY",&MULTIPLICITY,"x/I");
 	TH1D* hMULTIPLICITY = new TH1D("hMULTIPLICITY","Multiplicity",301,-0.5,300.5);
 	TH1D* hBeautyPart = new TH1D("hBeautyPart", "Beauty Particles Per Event",200,-0.5,200.5);
@@ -86,8 +94,8 @@ int BcProducer() {
 	TH1D* hPtNeutrinoS = new TH1D("hPtNeutrinoS","pT spectrum neutrino signal",50,0,10); // muon neutrino
 	TH1D* hPtNeutrinoBarS = new TH1D("hPtNeutrinoBarS","pT spectrum anti-neutrino signal",50,0,10); // muon anti-neutrino
 
-	TH1D* hEtaNeutrinoS = new TH1D("hEtaNeutrinoS","eta spectrum neutrino signal",50,-4,4); 
-	TH1D* hEtaNeutrinoBarS = new TH1D("hEtaNeutrinoBarS","eta spectrum anti-neutrino signal",50,-4,4);
+	TH1D* hEtaNeutrinoS = new TH1D("hEtaNeutrinoS","eta spectrum neutrino signal",50,2.5,4); 
+	TH1D* hEtaNeutrinoBarS = new TH1D("hEtaNeutrinoBarS","eta spectrum anti-neutrino signal",50,2.5,4);
 
 	TH1D* hPhiNeutrinoS = new TH1D("hPhiNeutrinoS","phi spectrum neutrino signal",50,-PI,PI); 
 	TH1D* hPhiNeutrinoBarS = new TH1D("hPhiNeutrinoBarS","phi spectrum anti-neutrino signal",50,-PI,PI);  
@@ -95,24 +103,24 @@ int BcProducer() {
 	TH1D* hPtNeutrinoB = new TH1D("hPtNeutrinoB","pT spectrum neutrino background",50,0,10); 
 	TH1D* hPtNeutrinoBarB = new TH1D("hPtNeutrinoBarB","pT spectrum anti-neutrino background",50,0,10); 
 
-	TH1D* hEtaNeutrinoB = new TH1D("hEtaNeutrinoB","eta spectrum neutrino background",50,-4,4); 
-	TH1D* hEtaNeutrinoBarB = new TH1D("hEtaNeutrinoBarB","eta spectrum anti-neutrino background",50,-4,4); 
+	TH1D* hEtaNeutrinoB = new TH1D("hEtaNeutrinoB","eta spectrum neutrino background",50,2.5,4); 
+	TH1D* hEtaNeutrinoBarB = new TH1D("hEtaNeutrinoBarB","eta spectrum anti-neutrino background",50,2.5,4); 
 
 	TH1D* hPhiNeutrinoB = new TH1D("hPhiNeutrinoB","phi spectrum neutrino background",50,-PI,PI); 
 	TH1D* hPhiNeutrinoBarB = new TH1D("hPhiNeutrinoBarB","phi spectrum anti-neutrino background",50,PI,-PI);  
 
 	// J/psi
 	TH1D* hPtJpsiS = new TH1D("hPtJpsiS","pT spectrum J/psi signal",50,0,10);
-	TH1D* hEtaJpsiS = new TH1D("hEtaJpsiS","eta spectrum J/psi signal",50,-4,4);
+	TH1D* hEtaJpsiS = new TH1D("hEtaJpsiS","eta spectrum J/psi signal",50,2.5,4);
 	TH1D* hPhiJpsiS = new TH1D("hPhiJpsiS","phi spectrum J/psi signal",50,-PI,PI);
 
 	TH1D* hPtJpsiB = new TH1D("hPtJpsiB","pT spectrum J/psi background",50,0,10);
-	TH1D* hEtaJpsiB = new TH1D("hEtaJpsiB","eta spectrum J/psi background",50,-4,4);
+	TH1D* hEtaJpsiB = new TH1D("hEtaJpsiB","eta spectrum J/psi background",50,2.5,4);
 	TH1D* hPhiJpsiB = new TH1D("hPhiJpsiB","phi spectrum J/psi background",50,-PI,PI);
 
 	// Kinematics constraints
 	const Double_t pTmin = 0.15; // minimum pT
-	const Double_t etaMin = -4; // muon acceptance in ALICE = (2.5,4)
+	const Double_t etaMin = 2.5; // muon acceptance in ALICE = (2.5,4)
 	const Double_t etaMax = 4;
 	
 	// Get PYTHIA
@@ -139,6 +147,8 @@ int BcProducer() {
 		int nPart = pythia.event.size(); // Number of particles produced in this event
 		MULTIPLICITY = 0; // Initialiazing for multiplicity plot
 		beautiness = 0; // Intialiazing for beauty production plot.
+		motherIndex = -1;
+		grandMotherIndex = -1;
 		// Initializing vectors for event-level information
 		vID.clear();
 		vPt.clear();
@@ -147,8 +157,12 @@ int BcProducer() {
 		vPhi.clear();
 		vCharge.clear();
 		vStatus.clear();
+		// vMotherIndex.clear();
+		// vGrandMotherIndex.clear();
 		vMother1.clear();
+		vGrandMother1.clear();
 		vMotherID.clear();
+		vGrandMotherID.clear();
 
 		// Particle loop
 		for(int iPart = 0; iPart<nPart; iPart++) {
@@ -162,8 +176,12 @@ int BcProducer() {
 			phi = particle.phi();
 			charge = particle.charge();
 			status = static_cast<Double_t> (particle.status());
-			mother = static_cast<Double_t> (particle.mother1());
-			motherID = static_cast<Double_t> (pythia.event[particle.mother1()].id());
+			motherIndex = particle.mother1();
+			grandMotherIndex = pythia.event[motherIndex].mother1();
+			mother = static_cast<Double_t> (motherIndex);
+			grandMother = static_cast<Double_t> (grandMotherIndex);
+			motherID = static_cast<Double_t> (pythia.event[motherIndex].id());
+			grandMotherID = static_cast<Double_t>(pythia.event[grandMotherIndex].id());
 			
 			// Kinematics check
 			if(pT < pTmin || eta < etaMin || eta > etaMax) continue;
@@ -175,6 +193,17 @@ int BcProducer() {
 			    MULTIPLICITY++; 
 			  }
 			}
+
+			// Filling vectors
+			vID.push_back(id);
+			vPt.push_back(pT);
+			vEta.push_back(eta);
+			vY.push_back(y);
+			vPhi.push_back(phi);
+			vCharge.push_back(charge);
+			vStatus.push_back(status);
+			vMother1.push_back(mother);
+			vMotherID.push_back(motherID);
 
 			if(id == 541) { // found a B_cˆ{+}
 				hPtBcP->Fill(pT);
