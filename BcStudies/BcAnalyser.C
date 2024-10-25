@@ -186,6 +186,7 @@ void status_file() {
 
 		for(int ipart = 0; ipart < nparticles; ipart++) {
             // TODO: this can be done easier later on, no?
+            // TODO: add mass for missing neutrino mass plot
 			id = (*vID)[ipart];
 			phi = (*vPhi)[ipart];
 			pT = (*vPt)[ipart];
@@ -260,21 +261,23 @@ void status_file() {
                     hPtSoloMuonSig->Fill((*vPt)[soloMuonIndex]);
 				    hEtaSoloMuonSig->Fill((*vEta)[soloMuonIndex]);
 				    hPhiSoloMuonSig->Fill((*vPhi)[soloMuonIndex]);
+                }
                 
                 // TODO: also think about if they have to come from B+ or B- (by splitting in more histograms,
                 // one from Bc+ decay and one from Bc- decay...)
                 // Candidates
                 if((grandMotherID == 541 || grandMotherID == -541) && motherID == 443 && id == -13) { // found muon in di-muon pair (from J/psi)
                     diMuon1Index = ipart;
-                    std::cout<<"1 = "<<diMuon1Index<<std::endl;
+                    if(VERBOSE) { std::cout<<"1 = "<<diMuon1Index<<std::endl; }
                 }
 
                 if((grandMotherID == 541 || grandMotherID == -541) && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
                     diMuon2Index = ipart;
-                    std::cout<<"2 = "<<diMuon2Index<<std::endl;
+                    if(VERBOSE) { std::cout<<"2 = "<<diMuon2Index<<std::endl; }
                 }
 
                 // The dimuons candidates are correlated
+                // J/psi -> μ+μ-
                 if(diMuon1Index != -1 && diMuon2Index != -1 &&
                     (*vMother1)[diMuon1Index] == (*vMother1)[diMuon2Index]) {
                     hDPhiDiMuons->Fill((*vPhi)[diMuon1Index],(*vPhi)[diMuon2Index]);
