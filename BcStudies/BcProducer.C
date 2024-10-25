@@ -182,7 +182,7 @@ int BcProducer() {
 			grandMother = static_cast<Double_t> (grandMotherIndex);
 			motherID = static_cast<Double_t> (pythia.event[motherIndex].id());
 			grandMotherID = static_cast<Double_t>(pythia.event[grandMotherIndex].id());
-			
+
 			// Kinematics check
 			if(pT < pTmin || eta < etaMin || eta > etaMax) continue;
 			
@@ -203,7 +203,9 @@ int BcProducer() {
 			vCharge.push_back(charge);
 			vStatus.push_back(status);
 			vMother1.push_back(mother);
+			vGrandMother1.push_back(grandMother);
 			vMotherID.push_back(motherID);
+			vGrandMotherID.push_back(grandMotherID);
 
 			if(id == 541) { // found a B_cˆ{+}
 				hPtBcP->Fill(pT);
