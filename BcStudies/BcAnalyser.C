@@ -72,7 +72,7 @@ void status_file() {
 	ch1->SetBranchAddress("MULTIPLICITY",&MULTIPLICITY);
 
 	// Variables used in this analyser
-	Int_t id;
+	Int_t id, diMuon1, diMuon2;
 	Double_t pT,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
 	int nParticles = 0;
 	
@@ -85,7 +85,7 @@ void status_file() {
 	
 	// Indicate the total number of events analysed
 	int nEvents = ch1->GetEntries();
-	cout << "The number of events for this analysis is: " << nEvents << endl;
+	std::cout << "The number of events for this analysis is: " << nEvents << std::endl;
 	
 	// Definitions of produced histograms
 	// The histograms are divided into two categories: angular correlations and trigger spectra, the latter can be integrated over in local scripts to obtain the total number of triggers, which the yield is then normalised over.
@@ -143,12 +143,16 @@ void status_file() {
     // Dimuons from J/psi
     // TODO: change names to ... and ...bar like above
     // TODO: split into histograms with J/psi from Bc+ and from Bc- (needs statistics...)
+    // 1 = muon- (-13)
+    // 2 = muon+ (+13)
     TH1D* hPtDiMuon1Sig = new TH1D("hPtDiMuon1Sig","pT spectrum dimuon1 signal",50,0,10);
     TH1D* hPtDiMuon2Sig = new TH1D("hPtDiMuon2Sig","pT spectrum dimuon2 signal",50,0,10);
     TH1D* hEtaDiMuon1Sig = new TH1D("hEtaDiMuon1Sig","eta spectrum dimuon1 signal",50,2.5,4); 
 	TH1D* hEtaDiMuon2Sig = new TH1D("hEtaDiMuon2Sig","eta spectrum dimuon2 signal",50,2.5,4);
 	TH1D* hPhiDiMuon1Sig = new TH1D("hPhiDiMuon1Sig","phi spectrum dimuon1 signal",50,-PI,PI); 
 	TH1D* hPhiDiMuon2Sig = new TH1D("hPhiDiMuon2Sig","phi spectrum dimuon2 signal",50,-PI,PI); 
+
+    TH1D* hDPhiDiMuons = new TH1D("hDPhiDiMuons","#Delta#phi for dimuon pair;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
 
     TH1D* hPtDiMuon1Bkg = new TH1D("hPtDiMuon1Bkg","pT spectrum dimuon1 background",50,0,10);
     TH1D* hPtDiMuon2Bkg = new TH1D("hPtDiMuon2Bkg","pT spectrum dimuon2 background",50,0,10);
@@ -168,6 +172,8 @@ void status_file() {
 		ch1->GetEntry(iEvent);
 		int nparticles = vID->size();
 		hMULT->Fill(MULTIPLICITY);
+        diMuon1 = -1;
+        diMuon2 = -1;
 
 		for(int ipart = 0; ipart < nparticles; ipart++) {
 			id = (*vID)[ipart];
@@ -223,43 +229,63 @@ void status_file() {
                 }
 
                 // TODO: J/psi decay to dimuons: confirm they have the same grandmother
+                // TODO: calculate DPhi
                 // TODO: also think about if they have to come from B+ or B- (by splitting in more histograms,
                 // one from Bc+ decay and one from Bc- decay...)
-                if(grandMotherID == 541 || grandMotherID == -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                if(grandMotherID == 541 || grandMotherID == -541 && motherID == 443 && id == -13) { // found muon in di-muon pair (from J/psi)
+                    diMuon1 = ipart;
                     hPtDiMuon1Sig->Fill(pT);
 				    hEtaDiMuon1Sig->Fill(eta);
 				    hPhiDiMuon1Sig->Fill(phi);
                 }
 
                 if(grandMotherID == 541 || grandMotherID == -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                    diMuon2 = ipart;
                     hPtDiMuon2Sig->Fill(pT);
 				    hEtaDiMuon2Sig->Fill(eta);
 				    hPhiDiMuon2Sig->Fill(phi);
                 }
 
+                // Fill Delta phi between the dimuons
+                if(diMuon1 != -1 && diMuon2 != -1) {
+                    hDPhiDiMuons->Fill((*vPhi)[diMuon1],(*vPhi)[diMuon2]);
+                }
+
                 // Background particles
-			    if(id == 14) { // found muon neutrino (B_cˆ{+} background)
+			    if(motherID != 541 && id == 14) { // found muon neutrino (B_cˆ{+} background)
 				    hPtNeutrinoBkg->Fill(pT);
 				    hEtaNeutrinoBkg->Fill(eta);
 				    hPhiNeutrinoBkg->Fill(phi);
 			    }
 
-			    if(id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
+			    if(motherID != -541 && id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
 				    hPtNeutrinoBarBkg->Fill(pT);
 				    hEtaNeutrinoBarBkg->Fill(eta);
 				    hPhiNeutrinoBarBkg->Fill(phi);
 			    }
 
-                if(motherID != 443 && id == -13) { // found standalone anti-muon (from B_cˆ{+} background)
+                if(motherID != 541 && motherID != 443 && id == -13) { // found standalone anti-muon (from B_cˆ{+} background)
                     hPtSoloMuonBkg->Fill(pT);
 				    hEtaSoloMuonBkg->Fill(eta);
 				    hPhiSoloMuonBkg->Fill(phi);
                 }
 
-                if(motherID != 443 && id == 13) { // found standalone muon (from B_cˆ{-} background)
+                if(motherID != -541 && motherID != 443 && id == 13) { // found standalone muon (from B_cˆ{-} background)
                     hPtSoloMuonBarBkg->Fill(pT);
 				    hEtaSoloMuonBarBkg->Fill(eta);
 				    hPhiSoloMuonBarBkg->Fill(phi);
+                }
+
+                if(grandMotherID != 541 && grandMotherID != -541 && motherID == 443 && id == -13) { // found anti-muon in di-muon pair (from J/psi)
+                    hPtDiMuon1Bkg->Fill(pT);
+				    hEtaDiMuon1Bkg->Fill(eta);
+				    hPhiDiMuon1Bkg->Fill(phi);
+                }
+
+                if(grandMotherID != 541 && grandMotherID != -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                    hPtDiMuon2Bkg->Fill(pT);
+				    hEtaDiMuon2Bkg->Fill(eta);
+				    hPhiDiMuon2Bkg->Fill(phi);
                 }
 
 			} // pT > 1 GeV cut
@@ -268,9 +294,9 @@ void status_file() {
 	
 	output->Write();
 	output->Close();
-	cout<<"The total number of Particles is: "<<nParticles<<endl;
+	std::cout<<"The total number of Particles is: "<<nParticles<<std::endl;
 
-    cout<<"The lepton flavour violation is violated in PYTHIA by about +/- 400 particles. Don't expect the same number of muons and neutrinos to be produced from Bc decay"<<endl;
+    std::cout<<"The lepton flavour violation is violated in PYTHIA by about +/- 400 particles. Don't expect the same number of muons and neutrinos to be produced from Bc decay"<<endl;
 
     std::cout<<std::endl;
     std::cout<<"Analysis terminated. Succesful?"<<std::endl;
