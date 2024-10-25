@@ -173,8 +173,9 @@ int BcProducer() {
 		for(int iPart = 0; iPart<nPart; iPart++) {
 			const Particle &particle = pythia.event[iPart];
 			if(!particle.isFinal()) continue; // Skip if the particle is not in its final state
-			
 			id = particle.id();
+			if(id != 13 && id != -13 &&	id != 14 && id != -14) continue; // Only keep muons and muon neutrinos
+			
 			pT = particle.pT();
 			eta = particle.eta();
 			y = particle.y();
