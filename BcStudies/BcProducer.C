@@ -245,13 +245,13 @@ int BcProducer() {
 			*/
 			
 			// Background particles
-			if(id == 14) { // found muon neutrino (B_cˆ{+} background)
+			if(motherID != 541 && id == 14) { // found muon neutrino (B_cˆ{+} background)
 				hPtNeutrinoB->Fill(pT);
 				hEtaNeutrinoB->Fill(eta);
 				hPhiNeutrinoB->Fill(phi);
 			}
 
-			if(id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
+			if(motherID != -541 && id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
 				hPtNeutrinoBarB->Fill(pT);
 				hEtaNeutrinoBarB->Fill(eta);
 				hPhiNeutrinoBarB->Fill(phi);
