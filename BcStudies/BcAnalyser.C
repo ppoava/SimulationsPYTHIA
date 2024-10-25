@@ -140,6 +140,24 @@ void status_file() {
 	TH1D* hPhiSoloMuonBkg = new TH1D("hPhiSoloMuonBkg","phi spectrum standalone muon background",50,-PI,PI); 
 	TH1D* hPhiSoloMuonBarBkg = new TH1D("hPhiSoloMuonBarBkg","phi spectrum standalone anti-muon background",50,-PI,PI);
 
+    // Dimuons from J/psi
+    // TODO: change names to ... and ...bar like above
+    // TODO: split into histograms with J/psi from Bc+ and from Bc- (needs statistics...)
+    TH1D* hPtDiMuon1Sig = new TH1D("hPtDiMuon1Sig","pT spectrum dimuon1 signal",50,0,10);
+    TH1D* hPtDiMuon2Sig = new TH1D("hPtDiMuon2Sig","pT spectrum dimuon2 signal",50,0,10);
+    TH1D* hEtaDiMuon1Sig = new TH1D("hEtaDiMuon1Sig","eta spectrum dimuon1 signal",50,2.5,4); 
+	TH1D* hEtaDiMuon2Sig = new TH1D("hEtaDiMuon2Sig","eta spectrum dimuon2 signal",50,2.5,4);
+	TH1D* hPhiDiMuon1Sig = new TH1D("hPhiDiMuon1Sig","phi spectrum dimuon1 signal",50,-PI,PI); 
+	TH1D* hPhiDiMuon2Sig = new TH1D("hPhiDiMuon2Sig","phi spectrum dimuon2 signal",50,-PI,PI); 
+
+    TH1D* hPtDiMuon1Bkg = new TH1D("hPtDiMuon1Bkg","pT spectrum dimuon1 background",50,0,10);
+    TH1D* hPtDiMuon2Bkg = new TH1D("hPtDiMuon2Bkg","pT spectrum dimuon2 background",50,0,10);
+    TH1D* hEtaDiMuon1Bkg = new TH1D("hEtaDiMuon1Bkg","eta spectrum dimuon1 background",50,2.5,4); 
+	TH1D* hEtaDiMuon2Bkg = new TH1D("hEtaDiMuon2Bkg","eta spectrum dimuon2 background",50,2.5,4);
+	TH1D* hPhiDiMuon1Bkg = new TH1D("hPhiDiMuon1Bkg","phi spectrum dimuon1 background",50,-PI,PI); 
+	TH1D* hPhiDiMuon2Bkg = new TH1D("hPhiDiMuon2Bkg","phi spectrum dimuon2 background",50,-PI,PI);
+
+
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
 	// TH2D* hTrPtY = new TH2D("hPtY",Form("pT and rapidity trigger pT for trigger %s;p_{T};y;Counts",title),100,0,50,100,-4,4);
@@ -204,6 +222,21 @@ void status_file() {
 				    hPhiSoloMuonBarSig->Fill(phi);
                 }
 
+                // TODO: J/psi decay to dimuons: confirm they have the same grandmother
+                // TODO: also think about if they have to come from B+ or B- (by splitting in more histograms,
+                // one from Bc+ decay and one from Bc- decay...)
+                if(grandMotherID == 541 || grandMotherID == -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                    hPtDiMuon1Sig->Fill(pT);
+				    hEtaDiMuon1Sig->Fill(eta);
+				    hPhiDiMuon1Sig->Fill(phi);
+                }
+
+                if(grandMotherID == 541 || grandMotherID == -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                    hPtDiMuon2Sig->Fill(pT);
+				    hEtaDiMuon2Sig->Fill(eta);
+				    hPhiDiMuon2Sig->Fill(phi);
+                }
+
                 // Background particles
 			    if(id == 14) { // found muon neutrino (B_cˆ{+} background)
 				    hPtNeutrinoBkg->Fill(pT);
@@ -217,6 +250,18 @@ void status_file() {
 				    hPhiNeutrinoBarBkg->Fill(phi);
 			    }
 
+                if(motherID != 443 && id == -13) { // found standalone anti-muon (from B_cˆ{+} background)
+                    hPtSoloMuonBkg->Fill(pT);
+				    hEtaSoloMuonBkg->Fill(eta);
+				    hPhiSoloMuonBkg->Fill(phi);
+                }
+
+                if(motherID != 443 && id == 13) { // found standalone muon (from B_cˆ{-} background)
+                    hPtSoloMuonBarBkg->Fill(pT);
+				    hEtaSoloMuonBarBkg->Fill(eta);
+				    hPhiSoloMuonBarBkg->Fill(phi);
+                }
+
 			} // pT > 1 GeV cut
 		} // Particle loop
 	} // Eventloop
@@ -225,7 +270,9 @@ void status_file() {
 	output->Close();
 	cout<<"The total number of Particles is: "<<nParticles<<endl;
 
+    cout<<"The lepton flavour violation is violated in PYTHIA by about +/- 400 particles. Don't expect the same number of muons and neutrinos to be produced from Bc decay"<<endl;
 
+    std::cout<<std::endl;
     std::cout<<"Analysis terminated. Succesful?"<<std::endl;
 }
 
