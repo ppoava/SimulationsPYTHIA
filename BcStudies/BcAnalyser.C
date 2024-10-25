@@ -53,7 +53,9 @@ void status_file() {
 	vector<Double_t>* vEta = 0;
 	vector<Double_t>* vY = 0;
 	vector<Double_t>* vMother1 = 0;
+    vector<Double_t>* vGrandMother1 = 0;
 	vector<Double_t>* vMotherID = 0;
+    vector<Double_t>* vGrandMotherID = 0;
 	Int_t MULTIPLICITY = 0;
 
 	// Setting up chain branch addresses to the vectors defined above
@@ -64,12 +66,12 @@ void status_file() {
 	ch1->SetBranchAddress("Y",&vY);
 	ch1->SetBranchAddress("STATUS",&vStatus);
 	ch1->SetBranchAddress("MOTHER",&vMother1);
+    ch1->SetBranchAddress("GRANDMOTHER",&vGrandMother1);
 	ch1->SetBranchAddress("MOTHERID",&vMotherID);
+    ch1->SetBranchAddress("GRANDMOTHERID",&vGrandMotherID);
 	ch1->SetBranchAddress("MULTIPLICITY",&MULTIPLICITY);
 
-	// Variables used in this script
-	// s indicates signal particle variables
-	// b indicates background particle variables
+	// Variables used in this analyser
 	Int_t id;
 	Double_t pT,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
 	int nParticles = 0;
@@ -102,28 +104,41 @@ void status_file() {
 	// The histograms are defined compactly for clarity
 	
 	TH1D* hMULT = new TH1D("hMULT","Multiplicity per event;multiplicity;Counts",100,0,400);
-    TH1D* hPt = new TH1D("hpT","Generic pT spectrum;pT;Counts",100,0,400);
-    TH1D* hEta = new TH1D("hEta","Generic Eta spectrum;eta;Counts",100,0,400);
-    TH1D* hY = new TH1D("hY","Generic rapidity spectrum;y;Counts",100,0,400);
+    TH1D* hPt = new TH1D("hpT","Generic pT spectrum;pT;Counts",50,0,10);
+    TH1D* hEta = new TH1D("hEta","Generic Eta spectrum;eta;Counts",50,2.5,4);
+    // TH1D* hY = new TH1D("hY","Generic rapidity spectrum;y;Counts",50,2.5,4);
+    TH1D* hPhi = new TH1D("hPhi","Generic phi spectrum;phi;Counts",50,-PI,PI);
 
     // Neutrinos
-	TH1D* hPtNeutrinoS = new TH1D("hPtNeutrinoS","pT spectrum neutrino signal",50,0,10); // muon neutrino
-	TH1D* hPtNeutrinoBarS = new TH1D("hPtNeutrinoBarS","pT spectrum anti-neutrino signal",50,0,10); // muon anti-neutrino
+    // --- Split in particle - antiparticle and signal - background
+	TH1D* hPtNeutrinoSig = new TH1D("hPtNeutrinoSig","pT spectrum neutrino signal",50,0,10); // muon neutrino
+	TH1D* hPtNeutrinoBarSig = new TH1D("hPtNeutrinoBarSig","pT spectrum anti-neutrino signal",50,0,10); // muon anti-neutrino
+	TH1D* hEtaNeutrinoSig = new TH1D("hEtaNeutrinoSig","eta spectrum neutrino signal",50,2.5,4); 
+	TH1D* hEtaNeutrinoBarSig = new TH1D("hEtaNeutrinoBarSig","eta spectrum anti-neutrino signal",50,2.5,4);
+	TH1D* hPhiNeutrinoSig = new TH1D("hPhiNeutrinoSig","phi spectrum neutrino signal",50,-PI,PI); 
+	TH1D* hPhiNeutrinoBarSig = new TH1D("hPhiNeutrinoBarSig","phi spectrum anti-neutrino signal",50,-PI,PI);  
 
-	TH1D* hEtaNeutrinoS = new TH1D("hEtaNeutrinoS","eta spectrum neutrino signal",50,2.5,4); 
-	TH1D* hEtaNeutrinoBarS = new TH1D("hEtaNeutrinoBarS","eta spectrum anti-neutrino signal",50,2.5,4);
+	TH1D* hPtNeutrinoBkg = new TH1D("hPtNeutrinoBkg","pT spectrum neutrino background",50,0,10); 
+	TH1D* hPtNeutrinoBarBkg = new TH1D("hPtNeutrinoBarBkg","pT spectrum anti-neutrino background",50,0,10); 
+	TH1D* hEtaNeutrinoBkg = new TH1D("hEtaNeutrinoBkg","eta spectrum neutrino background",50,2.5,4); 
+	TH1D* hEtaNeutrinoBarBkg = new TH1D("hEtaNeutrinoBarBkg","eta spectrum anti-neutrino background",50,2.5,4); 
+	TH1D* hPhiNeutrinoBkg = new TH1D("hPhiNeutrinoBkg","phi spectrum neutrino background",50,-PI,PI); 
+	TH1D* hPhiNeutrinoBarBkg = new TH1D("hPhiNeutrinoBarBkg","phi spectrum anti-neutrino background",50,PI,-PI); 
 
-	TH1D* hPhiNeutrinoS = new TH1D("hPhiNeutrinoS","phi spectrum neutrino signal",50,-PI,PI); 
-	TH1D* hPhiNeutrinoBarS = new TH1D("hPhiNeutrinoBarS","phi spectrum anti-neutrino signal",50,-PI,PI);  
+    // Standalone muon (solo)
+    TH1D* hPtSoloMuonSig = new TH1D("hPtSoloMuonSig","pT spectrum standalone muon signal",50,0,10);
+    TH1D* hPtSoloMuonBarSig = new TH1D("hPtSoloMuonBarSig","pT spectrum stanalone anti-muon signal",50,0,10);
+    TH1D* hEtaSoloMuonSig = new TH1D("hEtaSoloMuonSig","eta spectrum standalone muon signal",50,2.5,4); 
+	TH1D* hEtaSoloMuonBarSig = new TH1D("hEtaSoloMuonBarSig","eta spectrum standalone anti-muon signal",50,2.5,4);
+	TH1D* hPhiSoloMuonSig = new TH1D("hPhiSoloMuonSig","phi spectrum standalone muon signal",50,-PI,PI); 
+	TH1D* hPhiSoloMuonBarSig = new TH1D("hPhiSoloMuonBarSig","phi spectrum standalone anti-muon signal",50,-PI,PI); 
 
-	TH1D* hPtNeutrinoB = new TH1D("hPtNeutrinoB","pT spectrum neutrino background",50,0,10); 
-	TH1D* hPtNeutrinoBarB = new TH1D("hPtNeutrinoBarB","pT spectrum anti-neutrino background",50,0,10); 
-
-	TH1D* hEtaNeutrinoB = new TH1D("hEtaNeutrinoB","eta spectrum neutrino background",50,2.5,4); 
-	TH1D* hEtaNeutrinoBarB = new TH1D("hEtaNeutrinoBarB","eta spectrum anti-neutrino background",50,2.5,4); 
-
-	TH1D* hPhiNeutrinoB = new TH1D("hPhiNeutrinoB","phi spectrum neutrino background",50,-PI,PI); 
-	TH1D* hPhiNeutrinoBarB = new TH1D("hPhiNeutrinoBarB","phi spectrum anti-neutrino background",50,PI,-PI); 
+    TH1D* hPtSoloMuonBkg = new TH1D("hPtSoloMuonBkg","pT spectrum standalone muon background",50,0,10);
+    TH1D* hPtSoloMuonBarBkg = new TH1D("hPtSoloMuonBarBkg","pT spectrum stanalone anti-muon background",50,0,10);
+    TH1D* hEtaSoloMuonBkg = new TH1D("hEtaSoloMuonBkg","eta spectrum standalone muon background",50,2.5,4); 
+	TH1D* hEtaSoloMuonBarBkg = new TH1D("hEtaSoloMuonBarBkg","eta spectrum standalone anti-muon background",50,2.5,4);
+	TH1D* hPhiSoloMuonBkg = new TH1D("hPhiSoloMuonBkg","phi spectrum standalone muon background",50,-PI,PI); 
+	TH1D* hPhiSoloMuonBarBkg = new TH1D("hPhiSoloMuonBarBkg","phi spectrum standalone anti-muon background",50,-PI,PI);
 
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
@@ -143,38 +158,63 @@ void status_file() {
 			status = (*vStatus)[ipart];
 			eta =(*vEta)[ipart];
 			y = (*vY)[ipart]; // not to be confused with the y-component of the momentum, denoted py!
+            mother1 = (*vMother1) [ipart];
+            grandMother1 = (*vGrandMother1) [ipart];
 			motherID = (*vMotherID)[ipart];
+            grandMotherID = (*vGrandMotherID) [ipart];
 				
 			if(pT >= 1.) {
 				nParticles++;
 				hEta->Fill(eta);
-				hY->Fill(y);
+				// hY->Fill(y);
 				hPt->Fill(pT);
+                hPhi->Fill(phi);
 
                 // Signal particles
 			    if(motherID == 541 && id == 14) { // found muon neutrino (B_cˆ{+} signal)
-				    hPtNeutrinoS->Fill(pT);
-				    hEtaNeutrinoS->Fill(eta);
-				    hPhiNeutrinoS->Fill(phi);
+                    std::cout<<"This is my neutrino mom (from Bc+): "<<motherID<<std::endl;
+                    std::cout<<"iEvent = "<<iEvent<<std::endl;
+				    hPtNeutrinoSig->Fill(pT);
+				    hEtaNeutrinoSig->Fill(eta);
+				    hPhiNeutrinoSig->Fill(phi);
 			    }
 
 			    if(motherID == -541 && id == -14) { // found muon neutrino (B_cˆ{-} signal)
-				    hPtNeutrinoBarS->Fill(pT);
-				    hEtaNeutrinoBarS->Fill(eta);
-				    hPhiNeutrinoBarS->Fill(phi);
+                    std::cout<<"This is my anti-neutrino mom (from Bc-): "<<motherID<<std::endl;
+                    std::cout<<"iEvent = "<<iEvent<<std::endl;
+				    hPtNeutrinoBarSig->Fill(pT);
+				    hEtaNeutrinoBarSig->Fill(eta);
+				    hPhiNeutrinoBarSig->Fill(phi);
 			    }
+
+                // TODO : make sure standalone muon and muon neutrino have same mother!
+                if(motherID == 541 && id == -13) { // found standalone anti-muon (from B_cˆ{+})
+                    std::cout<<"This is my muon+ mom (from Bc+): "<<motherID<<std::endl;
+                    std::cout<<"iEvent = "<<iEvent<<std::endl;
+                    hPtSoloMuonSig->Fill(pT);
+				    hEtaSoloMuonSig->Fill(eta);
+				    hPhiSoloMuonSig->Fill(phi);
+                }
+
+                if(motherID == -541 && id == 13) { // found standalone muon (from B_cˆ{-})
+                    std::cout<<"This is my muon- mom (from Bc-): "<<motherID<<std::endl;
+                    std::cout<<"iEvent = "<<iEvent<<std::endl;
+                    hPtSoloMuonBarSig->Fill(pT);
+				    hEtaSoloMuonBarSig->Fill(eta);
+				    hPhiSoloMuonBarSig->Fill(phi);
+                }
 
                 // Background particles
 			    if(id == 14) { // found muon neutrino (B_cˆ{+} background)
-				    hPtNeutrinoB->Fill(pT);
-				    hEtaNeutrinoB->Fill(eta);
-				    hPhiNeutrinoB->Fill(phi);
+				    hPtNeutrinoBkg->Fill(pT);
+				    hEtaNeutrinoBkg->Fill(eta);
+				    hPhiNeutrinoBkg->Fill(phi);
 			    }
 
 			    if(id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
-				    hPtNeutrinoBarB->Fill(pT);
-				    hEtaNeutrinoBarB->Fill(eta);
-				    hPhiNeutrinoBarB->Fill(phi);
+				    hPtNeutrinoBarBkg->Fill(pT);
+				    hEtaNeutrinoBarBkg->Fill(eta);
+				    hPhiNeutrinoBarBkg->Fill(phi);
 			    }
 
 			} // pT > 1 GeV cut
@@ -183,9 +223,10 @@ void status_file() {
 	
 	output->Write();
 	output->Close();
-	cout<<"The total number of triggers is: "<<nParticles<<endl;
-	
-	cout<<"File: "<<filename<<" has been created!"<<endl;
+	cout<<"The total number of Particles is: "<<nParticles<<endl;
+
+
+    std::cout<<"Analysis terminated. Succesful?"<<std::endl;
 }
 
 
