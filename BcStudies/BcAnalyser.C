@@ -51,6 +51,7 @@ void status_file() {
 	// Now we define vectors that carry the information at event level
 	vector<Int_t>* vID = 0;
 	vector<Double_t>* vPt = 0;
+    vector<Double_t>* vM = 0;
 	vector<Double_t>* vPhi = 0;
 	vector<Double_t>* vStatus = 0;
 	vector<Double_t>* vEta = 0;
@@ -64,6 +65,7 @@ void status_file() {
 	// Setting up chain branch addresses to the vectors defined above
 	ch1->SetBranchAddress("ID",&vID);
 	ch1->SetBranchAddress("PT",&vPt);
+    ch1->SetBranchAddress("M",&vM);
 	ch1->SetBranchAddress("PHI",&vPhi);
 	ch1->SetBranchAddress("ETA",&vEta);
 	ch1->SetBranchAddress("Y",&vY);
@@ -76,7 +78,7 @@ void status_file() {
 
 	// Variables used in this analyser
 	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1Index,diMuon2Index;
-	Double_t pT,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
+	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
 	int nParticles = 0;
 	
 	// There is a possiblity to change status settings for production studies
@@ -164,7 +166,6 @@ void status_file() {
 	TH1D* hPhiDiMuon1Bkg = new TH1D("hPhiDiMuon1Bkg","phi spectrum dimuon1 background",50,-PI,PI); 
 	TH1D* hPhiDiMuon2Bkg = new TH1D("hPhiDiMuon2Bkg","phi spectrum dimuon2 background",50,-PI,PI);
 
-
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
 	// TH2D* hTrPtY = new TH2D("hPtY",Form("pT and rapidity trigger pT for trigger %s;p_{T};y;Counts",title),100,0,50,100,-4,4);
@@ -188,15 +189,16 @@ void status_file() {
             // TODO: this can be done easier later on, no?
             // TODO: add mass for missing neutrino mass plot
 			id = (*vID)[ipart];
+            m = (*vM)[ipart];
 			phi = (*vPhi)[ipart];
 			pT = (*vPt)[ipart];
 			status = (*vStatus)[ipart];
 			eta =(*vEta)[ipart];
 			y = (*vY)[ipart]; // not to be confused with the y-component of the momentum, denoted py!
-            mother1 = (*vMother1) [ipart];
-            grandMother1 = (*vGrandMother1) [ipart];
+            mother1 = (*vMother1)[ipart];
+            grandMother1 = (*vGrandMother1)[ipart];
 			motherID = (*vMotherID)[ipart];
-            grandMotherID = (*vGrandMotherID) [ipart];
+            grandMotherID = (*vGrandMotherID)[ipart];
 				
 			if(pT >= 0.15) { // same cut as in simulation
 				nParticles++;
