@@ -1,4 +1,5 @@
 // bbbarcorrelations_status.cpp
+// NOTE : ALWAYS CREATE FROM BCPRODUCER.C MACRO
 // Script that used PYTHIA to simulate collision events according to the settings given in the pythiasettings_Hard_Low_bb.cmnd file.
 
 // The variables saved are necessary to create azimuthal angular correlation plots for beauty hadrons, which are defined as follows:
