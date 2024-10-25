@@ -87,10 +87,13 @@ int BcProducer() {
 	// TH1D* hidBeauty = new TH1D("hidBeauty","PDG Codes for Beauty hadrons",12000,-6000,6000);
 
 	// Bc meson
+	/*
 	TH1D* hPtBcP = new TH1D("hPtBcP","pT spectrum B^{+}_{c}",50,0,10);
 	TH1D* hPtBcM = new TH1D("hPtBcM","pT spectrum B^{-}_{c}",50,0,10);
+	*/
 
 	// Neutrinos
+	// For now included to test the production output
 	TH1D* hPtNeutrinoS = new TH1D("hPtNeutrinoS","pT spectrum neutrino signal",50,0,10); // muon neutrino
 	TH1D* hPtNeutrinoBarS = new TH1D("hPtNeutrinoBarS","pT spectrum anti-neutrino signal",50,0,10); // muon anti-neutrino
 
@@ -110,6 +113,7 @@ int BcProducer() {
 	TH1D* hPhiNeutrinoBarB = new TH1D("hPhiNeutrinoBarB","phi spectrum anti-neutrino background",50,PI,-PI);  
 
 	// J/psi
+	/*
 	TH1D* hPtJpsiS = new TH1D("hPtJpsiS","pT spectrum J/psi signal",50,0,10);
 	TH1D* hEtaJpsiS = new TH1D("hEtaJpsiS","eta spectrum J/psi signal",50,2.5,4);
 	TH1D* hPhiJpsiS = new TH1D("hPhiJpsiS","phi spectrum J/psi signal",50,-PI,PI);
@@ -117,6 +121,7 @@ int BcProducer() {
 	TH1D* hPtJpsiB = new TH1D("hPtJpsiB","pT spectrum J/psi background",50,0,10);
 	TH1D* hEtaJpsiB = new TH1D("hEtaJpsiB","eta spectrum J/psi background",50,2.5,4);
 	TH1D* hPhiJpsiB = new TH1D("hPhiJpsiB","phi spectrum J/psi background",50,-PI,PI);
+	*/
 
 	// Kinematics constraints
 	const Double_t pTmin = 0.15; // minimum pT
@@ -207,6 +212,7 @@ int BcProducer() {
 			vMotherID.push_back(motherID);
 			vGrandMotherID.push_back(grandMotherID);
 
+			/*
 			if(id == 541) { // found a B_cˆ{+}
 				hPtBcP->Fill(pT);
 			}
@@ -214,6 +220,7 @@ int BcProducer() {
 			if(id == -541) { // found a B_cˆ{-}
 				hPtBcM->Fill(pT);
 			}
+			*/
 
 			// Signal particles
 			if(motherID == 541 && id == 14) { // found muon neutrino (B_cˆ{+} signal)
@@ -228,11 +235,13 @@ int BcProducer() {
 				hPhiNeutrinoBarS->Fill(phi);
 			}
 
+			/*
 			if(motherID == 541 && id == 443) { // found J/psi (B_cˆ{+} signal)
 				hPtJpsiS->Fill(pT);
 				hEtaJpsiS->Fill(eta);
 				hPhiJpsiS->Fill(phi);
 			}
+			*/
 			
 			// Background particles
 			if(id == 14) { // found muon neutrino (B_cˆ{+} background)
@@ -241,17 +250,19 @@ int BcProducer() {
 				hPhiNeutrinoB->Fill(phi);
 			}
 
-			if(id == -14) { // found muon neutrino (B_cˆ{-} background)
+			if(id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
 				hPtNeutrinoBarB->Fill(pT);
 				hEtaNeutrinoBarB->Fill(eta);
 				hPhiNeutrinoBarB->Fill(phi);
 			}
 
+			/*
 			if(id == 443) { // found J/psi (B_cˆ{+} signal)
 				hPtJpsiB->Fill(pT);
 				hEtaJpsiB->Fill(eta);
 				hPhiJpsiB->Fill(phi);
 			}
+			*/
 
 		} // 1st particle loop
 
