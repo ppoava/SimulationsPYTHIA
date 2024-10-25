@@ -48,16 +48,16 @@ int BcProducer() {
 	TTree *tree = new TTree("tree","bbbar correlations");
 	
 	// Define variables that will be generated
-	Double_t pT, eta, y, phi, pTTrigger, pTAssociate, charge, DeltaPhiBB, status, mother, motherID, grandMother, grandMotherID;
-	Int_t  id, idBeauty, MULTIPLICITY, nEvents, beautiness, motherIndex, grandMotherIndex;
+	Double_t pT,m,eta,y,phi,status,mother,motherID,grandMother,grandMotherID;
+	Int_t  id,idBeauty,MULTIPLICITY,nEvents,motherIndex,grandMotherIndex;
 
 	// Define vectors that contain event-level information on the particles
 	vector<Int_t> vID;
 	vector<Double_t> vPt;
+	vector<Double_t> vM;
 	vector<Double_t> vEta; // pseudorapidity
 	vector<Double_t> vY; // rapidity
 	vector<Double_t> vPhi;
-	vector<Double_t> vCharge;
 	vector<Double_t> vStatus;
 	// vector<Double_t> vMotherIndex;
 	// vector<Double_t> vGrandMotherIndex;
@@ -70,10 +70,10 @@ int BcProducer() {
 	// The histograms are used to provide quick checks on the output
 	tree->Branch("ID",&vID);
 	tree->Branch("PT",&vPt);
+	tree->Branch("M",&vM);
 	tree->Branch("ETA",&vEta);
 	tree->Branch("Y",&vY);
 	tree->Branch("PHI",&vPhi);
-	tree->Branch("CHARGE",&vCharge);
 	tree->Branch("STATUS",&vStatus);
 	// tree->Branch("MOTHERINDEX",&vMotherIndex);
 	// tree->Branch("GRANDMOTHERINDEX",&vGrandMotherIndex);
@@ -151,16 +151,15 @@ int BcProducer() {
 	        if(!pythia.next()) continue;
 		int nPart = pythia.event.size(); // Number of particles produced in this event
 		MULTIPLICITY = 0; // Initialiazing for multiplicity plot
-		beautiness = 0; // Intialiazing for beauty production plot.
 		motherIndex = -1;
 		grandMotherIndex = -1;
 		// Initializing vectors for event-level information
 		vID.clear();
 		vPt.clear();
+		vM.clear();
 		vEta.clear();
 		vY.clear();
 		vPhi.clear();
-		vCharge.clear();
 		vStatus.clear();
 		// vMotherIndex.clear();
 		// vGrandMotherIndex.clear();
@@ -177,10 +176,10 @@ int BcProducer() {
 			if(id != 13 && id != -13 &&	id != 14 && id != -14) continue; // Only keep muons and muon neutrinos
 			
 			pT = particle.pT();
+			m = particle.m();
 			eta = particle.eta();
 			y = particle.y();
 			phi = particle.phi();
-			charge = particle.charge();
 			status = static_cast<Double_t> (particle.status());
 			motherIndex = particle.mother1();
 			grandMotherIndex = pythia.event[motherIndex].mother1();
@@ -203,10 +202,10 @@ int BcProducer() {
 			// Filling vectors
 			vID.push_back(id);
 			vPt.push_back(pT);
+			vM.push_back(m);
 			vEta.push_back(eta);
 			vY.push_back(y);
 			vPhi.push_back(phi);
-			vCharge.push_back(charge);
 			vStatus.push_back(status);
 			vMother1.push_back(mother);
 			vGrandMother1.push_back(grandMother);
@@ -268,10 +267,9 @@ int BcProducer() {
 		} // 1st particle loop
 
 		hMULTIPLICITY->Fill((Double_t) MULTIPLICITY);
-		hBeautyPart->Fill((Double_t) beautiness);
 
 		// In order not to fill tree with empty vectors.
-		if(vID.empty() || vPt.empty() || vEta.empty() || vY.empty() || vPhi.empty() || vCharge.empty() || vStatus.empty() || vMother1.empty() || vMotherID.empty()) continue; 
+		if(vID.empty() || vPt.empty() || vM.empty() || vEta.empty() || vY.empty() || vPhi.empty() || vStatus.empty() || vMother1.empty() || vMotherID.empty()) continue; 
 		tree->Fill();
 	} // End of event loop
 	
