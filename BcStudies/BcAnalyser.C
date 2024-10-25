@@ -29,8 +29,8 @@ void status_file() {
 	TFile *output = new TFile("analysed_output.root","RECREATE");
 	
 	// OPTION 1: SINGLE FILE
-	ch1->Add("output_1e6.root");
-	
+    // INPUT
+	ch1->Add("output_1e6_condensed_number_of_particles_saved.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
 	// Number of trees to be added to the TChain
@@ -44,6 +44,9 @@ void status_file() {
 	}
     */
 	// COMMENT TILL THIS LINE TO DISABLE OPTION 2
+
+    // Debugging
+    Bool_t VERBOSE = false;
 
 	// Now we define vectors that carry the information at event level
 	vector<Int_t>* vID = 0;
@@ -187,7 +190,7 @@ void status_file() {
 			motherID = (*vMotherID)[ipart];
             grandMotherID = (*vGrandMotherID) [ipart];
 				
-			if(pT >= 1.) {
+			if(pT >= 0.15) { // same cut as in simulation
 				nParticles++;
 				hEta->Fill(eta);
 				// hY->Fill(y);
@@ -196,16 +199,20 @@ void status_file() {
 
                 // Signal particles
 			    if(motherID == 541 && id == 14) { // found muon neutrino (B_cˆ{+} signal)
+                    if(VERBOSE) {
                     std::cout<<"This is my neutrino mom (from Bc+): "<<motherID<<std::endl;
                     std::cout<<"iEvent = "<<iEvent<<std::endl;
+                    }
 				    hPtNeutrinoSig->Fill(pT);
 				    hEtaNeutrinoSig->Fill(eta);
 				    hPhiNeutrinoSig->Fill(phi);
 			    }
 
 			    if(motherID == -541 && id == -14) { // found muon neutrino (B_cˆ{-} signal)
+                    if(VERBOSE) {
                     std::cout<<"This is my anti-neutrino mom (from Bc-): "<<motherID<<std::endl;
                     std::cout<<"iEvent = "<<iEvent<<std::endl;
+                    }
 				    hPtNeutrinoBarSig->Fill(pT);
 				    hEtaNeutrinoBarSig->Fill(eta);
 				    hPhiNeutrinoBarSig->Fill(phi);
@@ -213,16 +220,20 @@ void status_file() {
 
                 // TODO : make sure standalone muon and muon neutrino have same mother!
                 if(motherID == 541 && id == -13) { // found standalone anti-muon (from B_cˆ{+})
+                    if(VERBOSE) {
                     std::cout<<"This is my muon+ mom (from Bc+): "<<motherID<<std::endl;
                     std::cout<<"iEvent = "<<iEvent<<std::endl;
+                    }
                     hPtSoloMuonSig->Fill(pT);
 				    hEtaSoloMuonSig->Fill(eta);
 				    hPhiSoloMuonSig->Fill(phi);
                 }
 
                 if(motherID == -541 && id == 13) { // found standalone muon (from B_cˆ{-})
+                    if(VERBOSE) {
                     std::cout<<"This is my muon- mom (from Bc-): "<<motherID<<std::endl;
                     std::cout<<"iEvent = "<<iEvent<<std::endl;
+                    }
                     hPtSoloMuonBarSig->Fill(pT);
 				    hEtaSoloMuonBarSig->Fill(eta);
 				    hPhiSoloMuonBarSig->Fill(phi);
@@ -252,6 +263,7 @@ void status_file() {
                 }
 
                 // Background particles
+                // TODO: think if the checks need to include not from J/psi filter
 			    if(motherID != 541 && id == 14) { // found muon neutrino (B_cˆ{+} background)
 				    hPtNeutrinoBkg->Fill(pT);
 				    hEtaNeutrinoBkg->Fill(eta);
@@ -296,7 +308,9 @@ void status_file() {
 	output->Close();
 	std::cout<<"The total number of Particles is: "<<nParticles<<std::endl;
 
-    std::cout<<"The lepton flavour violation is violated in PYTHIA by about +/- 400 particles. Don't expect the same number of muons and neutrinos to be produced from Bc decay"<<endl;
+    if(VERBOSE) { 
+        std::cout<<"The lepton flavour violation is violated in PYTHIA by about +/- 400 particles. Don't expect the same number of muons and neutrinos to be produced from Bc decay"<<endl;
+    }
 
     std::cout<<std::endl;
     std::cout<<"Analysis terminated. Succesful?"<<std::endl;
