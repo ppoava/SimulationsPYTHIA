@@ -54,8 +54,10 @@ PhaseSpace:pTHatMin = 1.
 ! We shut this off in order to analyse production from decay and instead manually define which particles to `make stable`
 ! Most particles are unstable by default in PYTHIA, so only mayDecay = off is meaningful in the lines below
 
+13:mayDecay = off				! μ
+-13:mayDecay = off 				! anti μ
 14:mayDecay = off				! ν
 -14:mayDecay = off				! anti ν
-443:mayDecay = off				! J/ψ
+! 443:mayDecay = off				! J/ψ
 ! 541:mayDecay = off    			! Bc+
 ! -541:mayDecay = off				! Bc-
