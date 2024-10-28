@@ -122,6 +122,7 @@ void status_file() {
     // TH1D* hY = new TH1D("hY","Generic rapidity spectrum;y;Counts",50,2.5,4);
     TH1D* hPhi = new TH1D("hPhi","Generic phi spectrum;phi;Counts",50,-PI,PI);
 	// TH1D* hMass = new TH1D("hMass","Generic mass spectrum;phi;Counts",50,0,0.1);
+	TH1D* hInvMass = new TH1D("hInvMass","Invariant mass of Bc+ or Bc-;mass [GeV];Counts",50,0,8);
 
     // Neutrinos
     // --- Split in particle - antiparticle and signal - background
@@ -154,10 +155,11 @@ void status_file() {
 	TH1D* hPhiSoloMuonBkg = new TH1D("hPhiSoloMuonBkg","phi spectrum standalone muon background",50,-PI,PI); 
 	TH1D* hPhiSoloMuonBarBkg = new TH1D("hPhiSoloMuonBarBkg","phi spectrum standalone anti-muon background",50,-PI,PI);
 
-	TH1D* hDPhiNeutrinoBarSoloMuon = new TH1D("hDPhiNeutrinoBarSoloMuon","#Delta#phi for semi-leptonic Bc- daughters;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
-	TH1D* hDPhiNeutrinoSoloMuonBar = new TH1D("hDPhiNeutrinoSoloMuonBar","#Delta#phi for semi-leptonic Bc+ daughters;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
-	TH1D* hDEtaNeutrinoBarSoloMuon = new TH1D("hDEtaNeutrinoBarSoloMuon","#Delta#eta for semi-leptonic Bc- daughters;#Delta#Eta;Counts",100,-2,2);
-	TH1D* hDEtaNeutrinoSoloMuonBar = new TH1D("hDEtaNeutrinoSoloMuonBar","#Delta#eta for semi-leptonic Bc+ daughters;#Delta#Eta;Counts",100,-2,2);
+	// Correlations
+	TH1D* hDPhiNeutrinoBarSoloMuon = new TH1D("hDPhiNeutrinoBarSoloMuon","#Delta#phi for semi-leptonic Bc- daughters;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDPhiNeutrinoSoloMuonBar = new TH1D("hDPhiNeutrinoSoloMuonBar","#Delta#phi for semi-leptonic Bc+ daughters;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDEtaNeutrinoBarSoloMuon = new TH1D("hDEtaNeutrinoBarSoloMuon","#Delta#eta for semi-leptonic Bc- daughters;#Delta#eta;Counts",100,-2,2);
+	TH1D* hDEtaNeutrinoSoloMuonBar = new TH1D("hDEtaNeutrinoSoloMuonBar","#Delta#eta for semi-leptonic Bc+ daughters;#Delta#eta;Counts",100,-2,2);
 
     // Dimuons from J/psi
     // TODO: change names to ... and ...bar like above
@@ -322,6 +324,7 @@ void status_file() {
     
     					// Calculate the invariant mass of the four-particle system
 					    double invariantMass = total.M();
+						hInvMass->Fill(invariantMass);
 						if(VERBOSE) { std::cout<<"invariant mass Bc+ = "<<invariantMass<<std::endl; }
 					}
 				}
@@ -415,6 +418,7 @@ void status_file() {
     
     					// Calculate the invariant mass of the four-particle system
 					    double invariantMass = total.M();
+						hInvMass->Fill(invariantMass);
 						if(VERBOSE) { std::cout<<"invariant mass Bc- = "<<invariantMass<<std::endl; }
 					}
 				}
