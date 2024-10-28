@@ -35,7 +35,7 @@ void status_file() {
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output_1e7_I_Think.root");
+	ch1->Add("combined_output.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
