@@ -20,6 +20,11 @@ Double_t DeltaPhi(Double_t phi1, Double_t phi2) {
 	return fmod(phi1-phi2+2.5*PI,2*PI)-0.5*PI;
 	}
 
+Double_t DeltaEta(Double_t eta1, Double_t eta2) {
+        // For eta it is easier..
+	return (eta1 - eta2);
+	}	
+
 void status_file() {
 	// This functions takes the trigger and associate id and creates a ROOT output file with the same filename
     // containing the histograms produced in this macro
@@ -47,7 +52,7 @@ void status_file() {
 	// COMMENT TILL THIS LINE TO DISABLE OPTION 2
 
     // Debugging
-    Bool_t VERBOSE = true;
+    Bool_t VERBOSE = false;
 
 	// Now we define vectors that carry the information at event level
 	vector<Int_t>* vID = 0;
@@ -78,7 +83,7 @@ void status_file() {
 	ch1->SetBranchAddress("MULTIPLICITY",&MULTIPLICITY);
 
 	// Variables used in this analyser
-	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1Index,diMuon2Index;
+	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1BcpIndex,diMuon2BcpIndex,diMuon1BcmIndex,diMuon2BcmIndex;
 	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
 	int nParticles = 0;
 	
@@ -149,18 +154,27 @@ void status_file() {
 
 	TH1D* hDPhiNeutrinoBarSoloMuon = new TH1D("hDPhiNeutrinoBarSoloMuon","#Delta#phi for semi-leptonic Bc- daughters;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDPhiNeutrinoSoloMuonBar = new TH1D("hDPhiNeutrinoSoloMuonBar","#Delta#phi for semi-leptonic Bc+ daughters;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDEtaNeutrinoBarSoloMuon = new TH1D("hDEtaNeutrinoBarSoloMuon","#Delta#eta for semi-leptonic Bc- daughters;#Delta#Eta;Counts",100,-2,2);
+	TH1D* hDEtaNeutrinoSoloMuonBar = new TH1D("hDEtaNeutrinoSoloMuonBar","#Delta#eta for semi-leptonic Bc+ daughters;#Delta#Eta;Counts",100,-2,2);
 
     // Dimuons from J/psi
     // TODO: change names to ... and ...bar like above
     // TODO: split into histograms with J/psi from Bc+ and from Bc- (needs statistics...)
     // 1 = muon- (-13)
     // 2 = muon+ (+13)
-    TH1D* hPtDiMuon1Sig = new TH1D("hPtDiMuon1Sig","pT spectrum dimuon1 signal",50,0,10);
-    TH1D* hPtDiMuon2Sig = new TH1D("hPtDiMuon2Sig","pT spectrum dimuon2 signal",50,0,10);
-    TH1D* hEtaDiMuon1Sig = new TH1D("hEtaDiMuon1Sig","eta spectrum dimuon1 signal",50,2.5,4); 
-	TH1D* hEtaDiMuon2Sig = new TH1D("hEtaDiMuon2Sig","eta spectrum dimuon2 signal",50,2.5,4);
-	TH1D* hPhiDiMuon1Sig = new TH1D("hPhiDiMuon1Sig","phi spectrum dimuon1 signal",50,-PI,PI); 
-	TH1D* hPhiDiMuon2Sig = new TH1D("hPhiDiMuon2Sig","phi spectrum dimuon2 signal",50,-PI,PI); 
+    TH1D* hPtDiMuon1BcpSig = new TH1D("hPtDiMuon1BcpSig","pT spectrum dimuon1 from Bc+ signal",50,0,10);
+    TH1D* hPtDiMuon2BcpSig = new TH1D("hPtDiMuon2BcpSig","pT spectrum dimuon2 from Bc+ signal",50,0,10);
+    TH1D* hEtaDiMuon1BcpSig = new TH1D("hEtaDiMuon1BcpSig","eta spectrum dimuon1 from Bc+ signal",50,2.5,4); 
+	TH1D* hEtaDiMuon2BcpSig = new TH1D("hEtaDiMuon2BcpSig","eta spectrum dimuon2 from Bc+ signal",50,2.5,4);
+	TH1D* hPhiDiMuon1BcpSig = new TH1D("hPhiDiMuon1BcpSig","phi spectrum dimuon1 from Bc+ signal",50,-PI,PI); 
+	TH1D* hPhiDiMuon2BcpSig = new TH1D("hPhiDiMuon2BcpSig","phi spectrum dimuon2 from Bc+ signal",50,-PI,PI); 
+
+	TH1D* hPtDiMuon1BcmSig = new TH1D("hPtDiMuon1BcmSig","pT spectrum dimuon1 from Bc- signal",50,0,10);
+    TH1D* hPtDiMuon2BcmSig = new TH1D("hPtDiMuon2BcmSig","pT spectrum dimuon2 from Bc- signal",50,0,10);
+    TH1D* hEtaDiMuon1BcmSig = new TH1D("hEtaDiMuon1BcmSig","eta spectrum dimuon1 from Bc- signal",50,2.5,4); 
+	TH1D* hEtaDiMuon2BcmSig = new TH1D("hEtaDiMuon2BcmSig","eta spectrum dimuon2 from Bc- signal",50,2.5,4);
+	TH1D* hPhiDiMuon1BcmSig = new TH1D("hPhiDiMuon1BcmSig","phi spectrum dimuon1 from Bc- signal",50,-PI,PI); 
+	TH1D* hPhiDiMuon2BcmSig = new TH1D("hPhiDiMuon2BcmSig","phi spectrum dimuon2 from Bc- signal",50,-PI,PI); 
 
     TH1D* hPtDiMuon1Bkg = new TH1D("hPtDiMuon1Bkg","pT spectrum dimuon1 background",50,0,10);
     TH1D* hPtDiMuon2Bkg = new TH1D("hPtDiMuon2Bkg","pT spectrum dimuon2 background",50,0,10);
@@ -187,8 +201,10 @@ void status_file() {
         neutrinoBarIndex = -1;
         soloMuonIndex = -1;
         soloMuonBarIndex = -1;
-        diMuon1Index = -1;
-        diMuon2Index = -1;
+        diMuon1BcpIndex = -1;
+        diMuon2BcpIndex = -1;
+		diMuon1BcmIndex = -1;
+        diMuon2BcmIndex = -1;
 
 		for(int ipart = 0; ipart < nparticles; ipart++) {
             // TODO: this can be done easier later on, no?
@@ -213,6 +229,7 @@ void status_file() {
                 hPhi->Fill(phi);
 
                 // Signal particles
+				// muon neutrino
 			    if(motherID == 541 && id == 14) { // found muon neutrino (B_cˆ{+} signal)
                     if(VERBOSE) {
                     // std::cout<<"This is my neutrino mom (from Bc+): "<<motherID<<std::endl;
@@ -221,6 +238,7 @@ void status_file() {
                     neutrinoIndex = ipart;
                 }
 
+				// anti-muon
                 if(motherID == 541 && id == -13) { // found standalone anti-muon (from B_cˆ{+})
                     if(VERBOSE) {
                     // std::cout<<"This is my muon+ mom (from Bc+): "<<motherID<<std::endl;
@@ -229,20 +247,51 @@ void status_file() {
                     soloMuonBarIndex = ipart;
                 }
 
+				// J/psi
+				if(grandMotherID == 541 && motherID == 443 && id == -13) { // found muon in di-muon pair (from J/psi)
+                    diMuon1BcpIndex = ipart;
+                    // if(VERBOSE) { std::cout<<"1 = "<<diMuon1Index<<std::endl; }
+                }
+
+                if(grandMotherID == 541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                    diMuon2BcpIndex = ipart;
+                    // if(VERBOSE) { std::cout<<"2 = "<<diMuon2Index<<std::endl; }
+                }
+
                 // Candidate matching
                 // TODO: match this also with J/psi!!! (needs statistics...)
-                // Bcˆ{+} -> μ+ ν
+                // Bcˆ{+} -> μ+ ν J/ψ -> μ+μ-
                 if(neutrinoIndex != -1 && soloMuonBarIndex != -1 &&
                     (*vMother1)[neutrinoIndex] == (*vMother1)[soloMuonBarIndex]) {
+					hDPhiNeutrinoSoloMuonBar->Fill(DeltaPhi((*vPhi)[neutrinoIndex],(*vPhi)[soloMuonBarIndex]));
+					hDEtaNeutrinoSoloMuonBar->Fill(DeltaEta((*vEta)[neutrinoIndex],(*vEta)[soloMuonBarIndex]));
+
                 	hPtNeutrinoSig->Fill((*vPt)[neutrinoIndex]);
 				    hEtaNeutrinoSig->Fill((*vEta)[neutrinoIndex]);
 				    hPhiNeutrinoSig->Fill((*vPhi)[neutrinoIndex]);
                     hPtSoloMuonBarSig->Fill((*vPt)[soloMuonBarIndex]);
 				    hEtaSoloMuonBarSig->Fill((*vEta)[soloMuonBarIndex]);
 				    hPhiSoloMuonBarSig->Fill((*vPhi)[soloMuonBarIndex]);
-                    }
+
+					// The dimuons candidates are correlated
+					// TODO: add this to part above in if-statement
+					// J/psi -> μ+μ-
+					if(diMuon1BcpIndex != -1 && diMuon2BcpIndex != -1 &&
+						(*vMother1)[diMuon1BcpIndex] == (*vMother1)[diMuon2BcpIndex]) {
+						hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1BcpIndex],(*vPhi)[diMuon2BcpIndex]));
+
+						hPtDiMuon1BcpSig->Fill((*vPt)[diMuon1BcpIndex]);
+						hEtaDiMuon1BcpSig->Fill((*vEta)[diMuon1BcpIndex]);
+						hPhiDiMuon1BcpSig->Fill((*vPhi)[diMuon1BcpIndex]);
+
+						hPtDiMuon2BcpSig->Fill((*vPt)[diMuon2BcpIndex]);
+						hEtaDiMuon2BcpSig->Fill((*vEta)[diMuon2BcpIndex]);
+						hPhiDiMuon2BcpSig->Fill((*vPhi)[diMuon2BcpIndex]);
+					}
+				}
 			    
-			    if(motherID == -541 && id == -14) { // found muon neutrino (B_cˆ{-} signal)
+				// anti-muon neutrino
+			    if(motherID == -541 && id == -14) { // found anti-muon neutrino (B_cˆ{-} signal)
                     if(VERBOSE) {
                     // std::cout<<"This is my anti-neutrino mom (from Bc-): "<<motherID<<std::endl;
                     // std::cout<<"iEvent = "<<iEvent<<std::endl;
@@ -250,6 +299,7 @@ void status_file() {
                     neutrinoBarIndex = ipart;
                 }
 
+				// muon
                 if(motherID == -541 && id == 13) { // found standalone muon (from B_cˆ{-})
                     if(VERBOSE) {
                     // std::cout<<"This is my muon- mom (from Bc-): "<<motherID<<std::endl;
@@ -258,11 +308,23 @@ void status_file() {
                     soloMuonIndex = ipart;
                 }
 
+				// J/psi
+				if(grandMotherID == -541 && motherID == 443 && id == -13) { // found muon in di-muon pair (from J/psi)
+                    diMuon1BcmIndex = ipart;
+                    // if(VERBOSE) { std::cout<<"1 = "<<diMuon1Index<<std::endl; }
+                }
+
+                if(grandMotherID == -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+                    diMuon2BcmIndex = ipart;
+                    // if(VERBOSE) { std::cout<<"2 = "<<diMuon2Index<<std::endl; }
+                }
+
                 // Candidate matching
-                // Bcˆ{-} -> μ- ν-bar
+                // Bcˆ{-} -> μ- ν-bar J/ψ -> μ+μ-
                 if(neutrinoBarIndex != -1 && soloMuonIndex != -1 &&
                     (*vMother1)[neutrinoBarIndex] == (*vMother1)[soloMuonIndex]) {
-					hDPhiNeutrinoBarSoloMuon->Fill(DeltaPhi((*vPhi)[diMuon1Index],(*vPhi)[diMuon2Index]));
+					hDPhiNeutrinoBarSoloMuon->Fill(DeltaPhi((*vPhi)[neutrinoBarIndex],(*vPhi)[soloMuonIndex]));
+					hDEtaNeutrinoBarSoloMuon->Fill(DeltaEta((*vEta)[neutrinoBarIndex],(*vEta)[soloMuonIndex]));
 
                     hPtNeutrinoBarSig->Fill((*vPt)[neutrinoBarIndex]);
 				    hEtaNeutrinoBarSig->Fill((*vEta)[neutrinoBarIndex]);
@@ -270,35 +332,22 @@ void status_file() {
                     hPtSoloMuonSig->Fill((*vPt)[soloMuonIndex]);
 				    hEtaSoloMuonSig->Fill((*vEta)[soloMuonIndex]);
 				    hPhiSoloMuonSig->Fill((*vPhi)[soloMuonIndex]);
-                }
-                
-                // TODO: also think about if they have to come from B+ or B- (by splitting in more histograms,
-                // one from Bc+ decay and one from Bc- decay...)
-                // Candidates
-                if((grandMotherID == 541 || grandMotherID == -541) && motherID == 443 && id == -13) { // found muon in di-muon pair (from J/psi)
-                    diMuon1Index = ipart;
-                    // if(VERBOSE) { std::cout<<"1 = "<<diMuon1Index<<std::endl; }
-                }
 
-                if((grandMotherID == 541 || grandMotherID == -541) && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
-                    diMuon2Index = ipart;
-                    // if(VERBOSE) { std::cout<<"2 = "<<diMuon2Index<<std::endl; }
-                }
+					// The dimuons candidates are correlated
+					// J/psi -> μ+μ-
+					if(diMuon1BcmIndex != -1 && diMuon2BcmIndex != -1 &&
+						(*vMother1)[diMuon1BcmIndex] == (*vMother1)[diMuon2BcmIndex]) {
+						hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1BcmIndex],(*vPhi)[diMuon2BcmIndex]));
 
-                // The dimuons candidates are correlated
-                // J/psi -> μ+μ-
-                if(diMuon1Index != -1 && diMuon2Index != -1 &&
-                    (*vMother1)[diMuon1Index] == (*vMother1)[diMuon2Index]) {
-                    hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1Index],(*vPhi)[diMuon2Index]));
+						hPtDiMuon1BcmSig->Fill((*vPt)[diMuon1BcmIndex]);
+						hEtaDiMuon1BcmSig->Fill((*vEta)[diMuon1BcmIndex]);
+						hPhiDiMuon1BcmSig->Fill((*vPhi)[diMuon1BcmIndex]);
 
-                    hPtDiMuon1Sig->Fill((*vPt)[diMuon1Index]);
-				    hEtaDiMuon1Sig->Fill((*vEta)[diMuon1Index]);
-				    hPhiDiMuon1Sig->Fill((*vPhi)[diMuon1Index]);
-
-                    hPtDiMuon2Sig->Fill((*vPt)[diMuon2Index]);
-				    hEtaDiMuon2Sig->Fill((*vEta)[diMuon2Index]);
-				    hPhiDiMuon2Sig->Fill((*vPhi)[diMuon2Index]);
-                }
+						hPtDiMuon2BcmSig->Fill((*vPt)[diMuon2BcmIndex]);
+						hEtaDiMuon2BcmSig->Fill((*vEta)[diMuon2BcmIndex]);
+						hPhiDiMuon2BcmSig->Fill((*vPhi)[diMuon2BcmIndex]);
+					}
+				}
 
                 // Background particles
                 // TODO: think if the checks need to include not from J/psi filter
