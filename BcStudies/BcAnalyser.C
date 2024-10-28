@@ -9,6 +9,7 @@
 #include "TTree.h"
 #include "TChain.h"
 #include "TString.h"
+#include "TLorentzVector.h"
 
 #define PI 3.14159265
 using namespace std;
@@ -52,7 +53,7 @@ void status_file() {
 	// COMMENT TILL THIS LINE TO DISABLE OPTION 2
 
     // Debugging
-    Bool_t VERBOSE = false;
+    Bool_t VERBOSE = true;
 
 	// Now we define vectors that carry the information at event level
 	vector<Int_t>* vID = 0;
@@ -85,6 +86,7 @@ void status_file() {
 	// Variables used in this analyser
 	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1BcpIndex,diMuon2BcpIndex,diMuon1BcmIndex,diMuon2BcmIndex;
 	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
+	TLorentzVector lorentzNeutrino, lorentzSoloMuon, lorentzDiMuon1, lorentzDiMuon2;
 	int nParticles = 0;
 	
 	// There is a possiblity to change status settings for production studies
@@ -287,6 +289,40 @@ void status_file() {
 						hPtDiMuon2BcpSig->Fill((*vPt)[diMuon2BcpIndex]);
 						hEtaDiMuon2BcpSig->Fill((*vEta)[diMuon2BcpIndex]);
 						hPhiDiMuon2BcpSig->Fill((*vPhi)[diMuon2BcpIndex]);
+
+						// Full decay reconstructed: invariant mass
+						lorentzNeutrino.SetPtEtaPhiM(
+							(*vPt)[neutrinoIndex], 
+							(*vEta)[neutrinoIndex], 
+							(*vPhi)[neutrinoIndex], 
+							(*vM)[neutrinoIndex]
+						);
+						lorentzSoloMuon.SetPtEtaPhiM(
+							(*vPt)[soloMuonBarIndex], 
+							(*vEta)[soloMuonBarIndex], 
+							(*vPhi)[soloMuonBarIndex], 
+							(*vM)[soloMuonBarIndex]
+						);
+						lorentzDiMuon1.SetPtEtaPhiM(
+							(*vPt)[diMuon1BcpIndex], 
+							(*vEta)[diMuon1BcpIndex], 
+							(*vPhi)[diMuon1BcpIndex], 
+							(*vM)[diMuon1BcpIndex]
+						);
+						lorentzDiMuon2.SetPtEtaPhiM(
+							(*vPt)[diMuon1BcpIndex], 
+							(*vEta)[diMuon1BcpIndex], 
+							(*vPhi)[diMuon1BcpIndex], 
+							(*vM)[diMuon1BcpIndex]
+						);
+    
+    					// Sum the four vectors to get the total four-momentum
+    					TLorentzVector total = lorentzNeutrino + lorentzSoloMuon +
+											   lorentzDiMuon1  + lorentzDiMuon2;
+    
+    					// Calculate the invariant mass of the four-particle system
+					    double invariantMass = total.M();
+						if(VERBOSE) { std::cout<<"invariant mass Bc+ = "<<invariantMass<<std::endl; }
 					}
 				}
 			    
@@ -346,6 +382,40 @@ void status_file() {
 						hPtDiMuon2BcmSig->Fill((*vPt)[diMuon2BcmIndex]);
 						hEtaDiMuon2BcmSig->Fill((*vEta)[diMuon2BcmIndex]);
 						hPhiDiMuon2BcmSig->Fill((*vPhi)[diMuon2BcmIndex]);
+
+						// Full decay reconstructed: invariant mass
+						lorentzNeutrino.SetPtEtaPhiM(
+							(*vPt)[neutrinoBarIndex], 
+							(*vEta)[neutrinoBarIndex], 
+							(*vPhi)[neutrinoBarIndex], 
+							(*vM)[neutrinoBarIndex]
+						);
+						lorentzSoloMuon.SetPtEtaPhiM(
+							(*vPt)[soloMuonIndex], 
+							(*vEta)[soloMuonIndex], 
+							(*vPhi)[soloMuonIndex], 
+							(*vM)[soloMuonIndex]
+						);
+						lorentzDiMuon1.SetPtEtaPhiM(
+							(*vPt)[diMuon1BcmIndex], 
+							(*vEta)[diMuon1BcmIndex], 
+							(*vPhi)[diMuon1BcmIndex], 
+							(*vM)[diMuon1BcmIndex]
+						);
+						lorentzDiMuon2.SetPtEtaPhiM(
+							(*vPt)[diMuon1BcmIndex], 
+							(*vEta)[diMuon1BcmIndex], 
+							(*vPhi)[diMuon1BcmIndex], 
+							(*vM)[diMuon1BcmIndex]
+						);
+    
+    					// Sum the four vectors to get the total four-momentum
+    					TLorentzVector total = lorentzNeutrino + lorentzSoloMuon +
+											   lorentzDiMuon1  + lorentzDiMuon2;
+    
+    					// Calculate the invariant mass of the four-particle system
+					    double invariantMass = total.M();
+						if(VERBOSE) { std::cout<<"invariant mass Bc- = "<<invariantMass<<std::endl; }
 					}
 				}
 
@@ -395,9 +465,11 @@ void status_file() {
 	output->Close();
 	std::cout<<"The total number of Particles is: "<<nParticles<<std::endl;
 
+	/*
     if(VERBOSE) { 
         std::cout<<"The lepton flavour violation is violated in PYTHIA by about +/- 400 particles. Don't expect the same number of muons and neutrinos to be produced from Bc decay"<<endl;
     }
+	*/
 
     std::cout<<std::endl;
     std::cout<<"Analysis terminated. Succesful?"<<std::endl;
