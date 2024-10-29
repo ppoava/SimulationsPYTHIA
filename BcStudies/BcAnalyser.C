@@ -53,7 +53,7 @@ void status_file() {
 	// COMMENT TILL THIS LINE TO DISABLE OPTION 2
 
     // Debugging
-    Bool_t VERBOSE = true;
+    Bool_t VERBOSE = false;
 
 	// Now we define vectors that carry the information at event level
 	vector<Int_t>* vID = 0;
@@ -123,6 +123,7 @@ void status_file() {
     TH1D* hPhi = new TH1D("hPhi","Generic phi spectrum;phi;Counts",50,-PI,PI);
 	// TH1D* hMass = new TH1D("hMass","Generic mass spectrum;phi;Counts",50,0,0.1);
 	TH1D* hInvMass = new TH1D("hInvMass","Invariant mass of Bc+ or Bc-;mass [GeV];Counts",50,0,8);
+	TH1D* hInvMassWithoutNeutrino = new TH1D("hInvMassWithoutNeutrino","Invariant mass of Bc+ or Bc- w/o neutrino;mass [GeV];Counts",50,0,8);
 
     // Neutrinos
     // --- Split in particle - antiparticle and signal - background
@@ -312,10 +313,10 @@ void status_file() {
 							(*vM)[diMuon1BcpIndex]
 						);
 						lorentzDiMuon2.SetPtEtaPhiM(
-							(*vPt)[diMuon1BcpIndex], 
-							(*vEta)[diMuon1BcpIndex], 
-							(*vPhi)[diMuon1BcpIndex], 
-							(*vM)[diMuon1BcpIndex]
+							(*vPt)[diMuon2BcpIndex], 
+							(*vEta)[diMuon2BcpIndex], 
+							(*vPhi)[diMuon2BcpIndex], 
+							(*vM)[diMuon2BcpIndex]
 						);
     
     					// Sum the four vectors to get the total four-momentum
@@ -326,6 +327,9 @@ void status_file() {
 					    double invariantMass = total.M();
 						hInvMass->Fill(invariantMass);
 						if(VERBOSE) { std::cout<<"invariant mass Bc+ = "<<invariantMass<<std::endl; }
+
+						total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
+						hInvMassWithoutNeutrino->Fill(total.M());
 					}
 				}
 			    
@@ -379,7 +383,7 @@ void status_file() {
 						hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1BcmIndex],(*vPhi)[diMuon2BcmIndex]));
 
 						hPtDiMuon1BcmSig->Fill((*vPt)[diMuon1BcmIndex]);
-						std::cout<<"pT dimuon = "<<(*vPt)[diMuon1BcmIndex]<<std::endl;
+						if (VERBOSE) { std::cout<<"pT dimuon = "<<(*vPt)[diMuon1BcmIndex]<<std::endl; }
 						hEtaDiMuon1BcmSig->Fill((*vEta)[diMuon1BcmIndex]);
 						hPhiDiMuon1BcmSig->Fill((*vPhi)[diMuon1BcmIndex]);
 
@@ -407,10 +411,10 @@ void status_file() {
 							(*vM)[diMuon1BcmIndex]
 						);
 						lorentzDiMuon2.SetPtEtaPhiM(
-							(*vPt)[diMuon1BcmIndex], 
-							(*vEta)[diMuon1BcmIndex], 
-							(*vPhi)[diMuon1BcmIndex], 
-							(*vM)[diMuon1BcmIndex]
+							(*vPt)[diMuon2BcmIndex], 
+							(*vEta)[diMuon2BcmIndex], 
+							(*vPhi)[diMuon2BcmIndex], 
+							(*vM)[diMuon2BcmIndex]
 						);
     
     					// Sum the four vectors to get the total four-momentum
@@ -421,6 +425,9 @@ void status_file() {
 					    double invariantMass = total.M();
 						hInvMass->Fill(invariantMass);
 						if(VERBOSE) { std::cout<<"invariant mass Bc- = "<<invariantMass<<std::endl; }
+
+						total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
+						hInvMassWithoutNeutrino->Fill(total.M());
 					}
 				}
 
