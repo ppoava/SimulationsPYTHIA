@@ -379,6 +379,7 @@ void status_file() {
 						hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1BcmIndex],(*vPhi)[diMuon2BcmIndex]));
 
 						hPtDiMuon1BcmSig->Fill((*vPt)[diMuon1BcmIndex]);
+						std::cout<<"pT dimuon = "<<(*vPt)[diMuon1BcmIndex]<<std::endl;
 						hEtaDiMuon1BcmSig->Fill((*vEta)[diMuon1BcmIndex]);
 						hPhiDiMuon1BcmSig->Fill((*vPhi)[diMuon1BcmIndex]);
 
