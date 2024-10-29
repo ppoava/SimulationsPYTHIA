@@ -6,7 +6,7 @@
 
 
 ! Number of events
-Main:numberOfEvents = 1000
+Main:numberOfEvents = 100000
 
 ! More information about these commands can be found on https://pythia.org/latest-manual/MainProgramSettings.html
 Init:showMultipartonInteractions = off
@@ -61,3 +61,25 @@ PhaseSpace:pTHatMin = 1.
 ! 443:mayDecay = off				! J/ψ
 ! 541:mayDecay = off    			! Bc+
 ! -541:mayDecay = off				! Bc-
+
+! We study only one specific channel for the Bc+ and Bc-
+! Disable all B_c+ decays initially
+541:onMode = off
+
+! Enable only the B_c+ -> J/psi + mu+ + nu_mu decay with 100% branching ratio
+541:oneChannel = 1 1.0 0 443 13 -14
+! Disable all J/psi decays
+443:onMode = off
+! Enable only the J/psi -> mu+ mu- decay
+443:onIfMatch = 13 -13
+! Disable all B_c+ decays initially
+541:onMode = off
+
+! Disable all B_c- decays initially
+-541:onMode = off
+! Enable only the B_c- -> J/psi + mu- + anti-nu_mu decay with 100% branching ratio
+-541:oneChannel = 1 1.0 0 443 -13 14
+! Disable all J/psi decays
+443:onMode = off
+! Enable only the J/psi -> mu+ mu- decay
+443:onIfMatch = 13 -13
