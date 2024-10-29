@@ -6,7 +6,7 @@
 
 
 ! Number of events
-Main:numberOfEvents = 100000
+Main:numberOfEvents = 10000
 
 ! More information about these commands can be found on https://pythia.org/latest-manual/MainProgramSettings.html
 Init:showMultipartonInteractions = off
@@ -58,9 +58,9 @@ PhaseSpace:pTHatMin = 1.
 -13:mayDecay = off 				! anti μ
 14:mayDecay = off				! ν
 -14:mayDecay = off				! anti ν
-! 443:mayDecay = off				! J/ψ
-! 541:mayDecay = off    			! Bc+
-! -541:mayDecay = off				! Bc-
+! 443:mayDecay = off			! J/ψ
+! 541:mayDecay = off    		! Bc+
+! -541:mayDecay = off			! Bc-
 
 ! We study only one specific channel for the Bc+ and Bc-
 ! Disable all B_c+ decays initially
@@ -83,3 +83,7 @@ PhaseSpace:pTHatMin = 1.
 443:onMode = off
 ! Enable only the J/psi -> mu+ mu- decay
 443:onIfMatch = 13 -13
+
+! Enabling this part removes the possibility of studying backgrounds
+! PhaseSpace:bias2Selection = on      	  # Select only events with specified particles
+! PhaseSpace:bias2SelectionHard = 541 -541  # Focus on B_c+ and B_c-
