@@ -36,7 +36,7 @@ void status_file() {
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("combined_output.root");
+	ch1->Add("output_1e9_28_OKT_2024.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
@@ -99,26 +99,10 @@ void status_file() {
 	// Indicate the total number of events analysed
 	int nEvents = ch1->GetEntries();
 	std::cout << "The number of events for this analysis is: " << nEvents << std::endl;
-	
-	// Definitions of produced histograms
-	// The histograms are divided into two categories: angular correlations and trigger spectra, the latter can be integrated over in local scripts to obtain the total number of triggers, which the yield is then normalised over.
-	// The naming convention is as follows: 
-	// h = histogram
-	// TrPt = trigger spectra
-	// DPhi = Delta phi (angular correlations)
-	// Pr = primary status, Sc = secondary status (production mechanisms)
 
-	// Furthermore, the trigger-associate pairs can be divided according to their pT, indicated as follows:
-	// Low (L): 1 < pT < 3 GeV
-	// Intermediate (I): 3 < pT < 8 GeV
-	// High (H): pT > 8 GeV
-	// Hence there are 6 total combinations for trigger-associate pairs (LL), (IL), (HL), (II), (HI) and (HH).
-
-	// The histograms are defined compactly for clarity
-	
 	TH1D* hMULT = new TH1D("hMULT","Multiplicity per event;multiplicity;Counts",100,0,400);
     TH1D* hPt = new TH1D("hpT","Generic pT spectrum;pT;Counts",50,0,10);
-    TH1D* hEta = new TH1D("hEta","Generic Eta spectrum;eta;Counts",50,2.5,4);
+    TH1D* hEta = new TH1D("hEta","Generic Eta spectrum;eta;Counts",50,-4,4);
     // TH1D* hY = new TH1D("hY","Generic rapidity spectrum;y;Counts",50,2.5,4);
     TH1D* hPhi = new TH1D("hPhi","Generic phi spectrum;phi;Counts",50,-PI,PI);
 	// TH1D* hMass = new TH1D("hMass","Generic mass spectrum;phi;Counts",50,0,0.1);
@@ -129,15 +113,15 @@ void status_file() {
     // --- Split in particle - antiparticle and signal - background
 	TH1D* hPtNeutrinoSig = new TH1D("hPtNeutrinoSig","pT spectrum neutrino signal",50,0,10); // muon neutrino
 	TH1D* hPtNeutrinoBarSig = new TH1D("hPtNeutrinoBarSig","pT spectrum anti-neutrino signal",50,0,10); // muon anti-neutrino
-	TH1D* hEtaNeutrinoSig = new TH1D("hEtaNeutrinoSig","eta spectrum neutrino signal",50,2.5,4); 
-	TH1D* hEtaNeutrinoBarSig = new TH1D("hEtaNeutrinoBarSig","eta spectrum anti-neutrino signal",50,2.5,4);
+	TH1D* hEtaNeutrinoSig = new TH1D("hEtaNeutrinoSig","eta spectrum neutrino signal",50,-4,4); 
+	TH1D* hEtaNeutrinoBarSig = new TH1D("hEtaNeutrinoBarSig","eta spectrum anti-neutrino signal",50,-4,4);
 	TH1D* hPhiNeutrinoSig = new TH1D("hPhiNeutrinoSig","phi spectrum neutrino signal",50,-PI,PI); 
 	TH1D* hPhiNeutrinoBarSig = new TH1D("hPhiNeutrinoBarSig","phi spectrum anti-neutrino signal",50,-PI,PI);  
 
 	TH1D* hPtNeutrinoBkg = new TH1D("hPtNeutrinoBkg","pT spectrum neutrino background",50,0,10); 
 	TH1D* hPtNeutrinoBarBkg = new TH1D("hPtNeutrinoBarBkg","pT spectrum anti-neutrino background",50,0,10); 
-	TH1D* hEtaNeutrinoBkg = new TH1D("hEtaNeutrinoBkg","eta spectrum neutrino background",50,2.5,4); 
-	TH1D* hEtaNeutrinoBarBkg = new TH1D("hEtaNeutrinoBarBkg","eta spectrum anti-neutrino background",50,2.5,4); 
+	TH1D* hEtaNeutrinoBkg = new TH1D("hEtaNeutrinoBkg","eta spectrum neutrino background",50,-4,4); 
+	TH1D* hEtaNeutrinoBarBkg = new TH1D("hEtaNeutrinoBarBkg","eta spectrum anti-neutrino background",50,-4,4); 
 	TH1D* hPhiNeutrinoBkg = new TH1D("hPhiNeutrinoBkg","phi spectrum neutrino background",50,-PI,PI); 
 	TH1D* hPhiNeutrinoBarBkg = new TH1D("hPhiNeutrinoBarBkg","phi spectrum anti-neutrino background",50,PI,-PI); 
 
@@ -159,8 +143,8 @@ void status_file() {
 	// Correlations
 	TH1D* hDPhiNeutrinoBarSoloMuon = new TH1D("hDPhiNeutrinoBarSoloMuon","#Delta#phi for semi-leptonic Bc- daughters;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDPhiNeutrinoSoloMuonBar = new TH1D("hDPhiNeutrinoSoloMuonBar","#Delta#phi for semi-leptonic Bc+ daughters;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
-	TH1D* hDEtaNeutrinoBarSoloMuon = new TH1D("hDEtaNeutrinoBarSoloMuon","#Delta#eta for semi-leptonic Bc- daughters;#Delta#eta;Counts",100,-2,2);
-	TH1D* hDEtaNeutrinoSoloMuonBar = new TH1D("hDEtaNeutrinoSoloMuonBar","#Delta#eta for semi-leptonic Bc+ daughters;#Delta#eta;Counts",100,-2,2);
+	TH1D* hDEtaNeutrinoBarSoloMuon = new TH1D("hDEtaNeutrinoBarSoloMuon","#Delta#eta for semi-leptonic Bc- daughters;#Delta#eta;Counts",100,-4,4);
+	TH1D* hDEtaNeutrinoSoloMuonBar = new TH1D("hDEtaNeutrinoSoloMuonBar","#Delta#eta for semi-leptonic Bc+ daughters;#Delta#eta;Counts",100,-4,4);
 
     // Dimuons from J/psi
     // TODO: change names to ... and ...bar like above
