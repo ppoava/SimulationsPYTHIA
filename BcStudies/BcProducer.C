@@ -171,8 +171,22 @@ int BcProducer() {
 		// Particle loop
 		for(int iPart = 0; iPart<nPart; iPart++) {
 			const Particle &particle = pythia.event[iPart];
-			if(!particle.isFinal()) continue; // Skip if the particle is not in its final state
+
 			id = particle.id();
+			if (id == 541 || id == -541) { 
+    			std::cout << "Ladies and gentlemen, we got em" << std::endl;
+				// Loop through all daughters from daughter1 to daughter2
+    			int firstDaughter = particle.daughter1();
+    			int lastDaughter = particle.daughter2();
+    
+    			for (int i = firstDaughter; i <= lastDaughter; ++i) {
+        			std::cout << "Dit is mn dochter: " << pythia.event[i].id() << std::endl;
+					std::cout << std::endl;
+    			}
+			}
+
+			if(!particle.isFinal()) continue; // Skip if the particle is not in its final state
+			// id = particle.id();
 			if(id != 13 && id != -13 &&	id != 14 && id != -14) continue; // Only keep muons and muon neutrinos
 			
 			pT = particle.pT();
@@ -188,8 +202,8 @@ int BcProducer() {
 			motherID = static_cast<Double_t> (pythia.event[motherIndex].id());
 			grandMotherID = static_cast<Double_t>(pythia.event[grandMotherIndex].id());
 
-			// Kinematics check
-			if(pT < pTmin || eta < etaMin || eta > etaMax) continue;
+			// Kinematics check on muons
+			if((id == 13 || id == -13) && (pT < pTmin || eta < etaMin || eta > etaMax)) continue;
 			
 			// Multiplicity is defined as the number of charged primary particles in the final state of the event
 			// Particles to be considered primaries here are: electron, muon, pion, kaon, proton
