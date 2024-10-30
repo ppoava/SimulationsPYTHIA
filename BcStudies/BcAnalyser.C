@@ -153,26 +153,30 @@ void status_file() {
     // 2 = muon+ (+13)
     TH1D* hPtDiMuon1BcpSig = new TH1D("hPtDiMuon1BcpSig","pT spectrum dimuon1 from Bc+ signal",50,0,10);
     TH1D* hPtDiMuon2BcpSig = new TH1D("hPtDiMuon2BcpSig","pT spectrum dimuon2 from Bc+ signal",50,0,10);
-    TH1D* hEtaDiMuon1BcpSig = new TH1D("hEtaDiMuon1BcpSig","eta spectrum dimuon1 from Bc+ signal",50,2.5,4); 
+    TH1D* hEtaDiMuon1BcpSig = new TH1D("hEtaDiMuon1BcpSig","eta spectrum dimuon1 from Bc+ signal",50,2.5,4);
 	TH1D* hEtaDiMuon2BcpSig = new TH1D("hEtaDiMuon2BcpSig","eta spectrum dimuon2 from Bc+ signal",50,2.5,4);
-	TH1D* hPhiDiMuon1BcpSig = new TH1D("hPhiDiMuon1BcpSig","phi spectrum dimuon1 from Bc+ signal",50,-PI,PI); 
-	TH1D* hPhiDiMuon2BcpSig = new TH1D("hPhiDiMuon2BcpSig","phi spectrum dimuon2 from Bc+ signal",50,-PI,PI); 
+	TH1D* hPhiDiMuon1BcpSig = new TH1D("hPhiDiMuon1BcpSig","phi spectrum dimuon1 from Bc+ signal",50,-PI,PI);
+	TH1D* hPhiDiMuon2BcpSig = new TH1D("hPhiDiMuon2BcpSig","phi spectrum dimuon2 from Bc+ signal",50,-PI,PI);
 
 	TH1D* hPtDiMuon1BcmSig = new TH1D("hPtDiMuon1BcmSig","pT spectrum dimuon1 from Bc- signal",50,0,10);
     TH1D* hPtDiMuon2BcmSig = new TH1D("hPtDiMuon2BcmSig","pT spectrum dimuon2 from Bc- signal",50,0,10);
-    TH1D* hEtaDiMuon1BcmSig = new TH1D("hEtaDiMuon1BcmSig","eta spectrum dimuon1 from Bc- signal",50,2.5,4); 
+    TH1D* hEtaDiMuon1BcmSig = new TH1D("hEtaDiMuon1BcmSig","eta spectrum dimuon1 from Bc- signal",50,2.5,4);
 	TH1D* hEtaDiMuon2BcmSig = new TH1D("hEtaDiMuon2BcmSig","eta spectrum dimuon2 from Bc- signal",50,2.5,4);
-	TH1D* hPhiDiMuon1BcmSig = new TH1D("hPhiDiMuon1BcmSig","phi spectrum dimuon1 from Bc- signal",50,-PI,PI); 
-	TH1D* hPhiDiMuon2BcmSig = new TH1D("hPhiDiMuon2BcmSig","phi spectrum dimuon2 from Bc- signal",50,-PI,PI); 
+	TH1D* hPhiDiMuon1BcmSig = new TH1D("hPhiDiMuon1BcmSig","phi spectrum dimuon1 from Bc- signal",50,-PI,PI);
+	TH1D* hPhiDiMuon2BcmSig = new TH1D("hPhiDiMuon2BcmSig","phi spectrum dimuon2 from Bc- signal",50,-PI,PI);
 
     TH1D* hPtDiMuon1Bkg = new TH1D("hPtDiMuon1Bkg","pT spectrum dimuon1 background",50,0,10);
     TH1D* hPtDiMuon2Bkg = new TH1D("hPtDiMuon2Bkg","pT spectrum dimuon2 background",50,0,10);
-    TH1D* hEtaDiMuon1Bkg = new TH1D("hEtaDiMuon1Bkg","eta spectrum dimuon1 background",50,2.5,4); 
+    TH1D* hEtaDiMuon1Bkg = new TH1D("hEtaDiMuon1Bkg","eta spectrum dimuon1 background",50,2.5,4);
 	TH1D* hEtaDiMuon2Bkg = new TH1D("hEtaDiMuon2Bkg","eta spectrum dimuon2 background",50,2.5,4);
-	TH1D* hPhiDiMuon1Bkg = new TH1D("hPhiDiMuon1Bkg","phi spectrum dimuon1 background",50,-PI,PI); 
+	TH1D* hPhiDiMuon1Bkg = new TH1D("hPhiDiMuon1Bkg","phi spectrum dimuon1 background",50,-PI,PI);
 	TH1D* hPhiDiMuon2Bkg = new TH1D("hPhiDiMuon2Bkg","phi spectrum dimuon2 background",50,-PI,PI);
 
 	TH1D* hDPhiDiMuons = new TH1D("hDPhiDiMuons","#Delta#phi for dimuon pair;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDPhiSoloMuonDiMuons = new TH1D("hDPhiSoloMuonDiMuons","#Delta#phi for muon and di-muon pair from Bc-;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDPhiSoloMuonBarDiMuons = new TH1D("hDPhiSoloMuonBarDiMuons","#Delta#phi for muon and di-muon pair from Bc+;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,-4,4);
+	TH1D* hDEtaSoloMuonBarDiMuons = new TH1D("hDEtaSoloMuonBarDiMuons","#Delta#eta for muon and di-muon pair from Bc+;#Delta#eta;Counts",100,-4,4);
 
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
