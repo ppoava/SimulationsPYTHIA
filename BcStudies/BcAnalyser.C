@@ -36,7 +36,7 @@ void status_file() {
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output_1e9_28_OKT_2024.root");
+	ch1->Add("output.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
