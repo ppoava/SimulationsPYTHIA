@@ -173,16 +173,21 @@ int BcProducer() {
 			const Particle &particle = pythia.event[iPart];
 
 			id = particle.id();
-			if (id == 541 || id == -541) { 
+			if (id == 541 || id == -541) {
     			std::cout << "Ladies and gentlemen, we got em" << std::endl;
+
+				/*
 				// Loop through all daughters from daughter1 to daughter2
     			int firstDaughter = particle.daughter1();
+				std::cout<<"firstDaughter = "<<firstDaughter<<std::endl;
     			int lastDaughter = particle.daughter2();
-    
+				std::cout<<"lastDaughter = "<<lastDaughter<<std::endl;    
+
     			for (int i = firstDaughter; i <= lastDaughter; ++i) {
         			std::cout << "Dit is mn dochter: " << pythia.event[i].id() << std::endl;
 					std::cout << std::endl;
     			}
+				*/
 			}
 
 			if(!particle.isFinal()) continue; // Skip if the particle is not in its final state
