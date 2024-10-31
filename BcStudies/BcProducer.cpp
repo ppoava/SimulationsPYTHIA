@@ -17,6 +17,7 @@
 #include <cstring>
 #include <chrono>
 #include <vector>
+#include <unistd.h>
 // PYTHIA library
 #include "Pythia8/Pythia.h"
 // ROOT libraries
@@ -30,13 +31,13 @@
 using namespace std;
 using namespace Pythia8;
 
-int BcProducer() {
+int main(int argc, char*  argv[]) {
 	// For larger simulations it is essential to know the duration of the execution of this script
 	// Start time here
 	auto start = chrono::high_resolution_clock::now();
 	
 	// Create output file
-	TFile* output = new TFile("output.root","RECREATE");
+	TFile* output = new TFile(Form("%s",argv[1]),"RECREATE");
 	/*
 	if(!output->IsOpen()){
 		cout<<"Error: File "<<"output.root"<<"already exists terminating program!"<<endl;
@@ -138,7 +139,9 @@ int BcProducer() {
 	
 	// Create a random seed so that the outcome will be truly random
 	Int_t proccessid = getpid();
-	string seedstr = "Random:seed = "+std::to_string((time(0)+proccessid)%900000000);
+	int seedMod1 = std::stoi(argv[2]);
+	int seedMod2 = std::stoi(argv[3]);
+	string seedstr = "Random:seed = "+std::to_string((time(0)+proccessid+seedMod1+seedMod2)%900000000);
 	pythia.readString("Random:setSeed = on");
 	pythia.readString(seedstr);
 	
