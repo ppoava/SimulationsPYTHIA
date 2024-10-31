@@ -176,8 +176,8 @@ void status_file() {
 	TH1D* hDEtaDiMuons = new TH1D("hDEtaDiMuons","#Delta#eta for dimuon pair;#Delta#eta;Counts",100,-2.5,4);
 	TH1D* hDPhiSoloMuonDiMuons = new TH1D("hDPhiSoloMuonDiMuons","#Delta#phi for muon and di-muon pair from Bc-;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDPhiSoloMuonBarDiMuons = new TH1D("hDPhiSoloMuonBarDiMuons","#Delta#phi for muon and di-muon pair from Bc+;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
-	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,-4,4);
-	TH1D* hDEtaSoloMuonBarDiMuons = new TH1D("hDEtaSoloMuonBarDiMuons","#Delta#eta for muon and di-muon pair from Bc+;#Delta#eta;Counts",100,-4,4);
+	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,0,4.5);
+	TH1D* hDEtaSoloMuonBarDiMuons = new TH1D("hDEtaSoloMuonBarDiMuons","#Delta#eta for muon and di-muon pair from Bc+;#Delta#eta;Counts",100,0,4.5);
 
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
@@ -276,8 +276,8 @@ void status_file() {
 						DEtaDiMuons = DeltaEta((*vEta)[diMuon1BcpIndex],(*vEta)[diMuon2BcpIndex]);
 						hDPhiDiMuons->Fill(DPhiDiMuons);
 						hDEtaDiMuons->Fill(DEtaDiMuons);
-						hDPhiSoloMuonBarDiMuons->Fill((*vPhi)[soloMuonBarIndex],DPhiDiMuons);
-						hDEtaSoloMuonBarDiMuons->Fill((*vEta)[soloMuonBarIndex],DEtaDiMuons);
+						hDPhiSoloMuonBarDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonBarIndex],DPhiDiMuons));
+						hDEtaSoloMuonBarDiMuons->Fill(DeltaEta((*vEta)[soloMuonBarIndex],DEtaDiMuons));
 
 						hPtDiMuon1BcpSig->Fill((*vPt)[diMuon1BcpIndex]);
 						hEtaDiMuon1BcpSig->Fill((*vEta)[diMuon1BcpIndex]);
@@ -378,8 +378,8 @@ void status_file() {
 						DEtaDiMuons = DeltaEta((*vEta)[diMuon1BcmIndex],(*vEta)[diMuon2BcmIndex]);
 						hDPhiDiMuons->Fill(DPhiDiMuons);
 						hDEtaDiMuons->Fill(DEtaDiMuons);
-						hDPhiSoloMuonDiMuons->Fill((*vPhi)[soloMuonIndex],DPhiDiMuons);
-						hDEtaSoloMuonDiMuons->Fill((*vEta)[soloMuonIndex],DEtaDiMuons);
+						hDPhiSoloMuonDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonIndex],DPhiDiMuons));
+						hDEtaSoloMuonDiMuons->Fill(DeltaEta((*vEta)[soloMuonIndex],DEtaDiMuons));
 
 						hPtDiMuon1BcmSig->Fill((*vPt)[diMuon1BcmIndex]);
 						if (VERBOSE) { std::cout<<"pT dimuon = "<<(*vPt)[diMuon1BcmIndex]<<std::endl; }
