@@ -36,7 +36,7 @@ void status_file() {
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output.root");
+	ch1->Add("output_1e9_28_OKT_2024.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
@@ -85,7 +85,7 @@ void status_file() {
 
 	// Variables used in this analyser
 	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1BcpIndex,diMuon2BcpIndex,diMuon1BcmIndex,diMuon2BcmIndex;
-	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID;
+	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID, DPhiDiMuons, DEtaDiMuons;
 	TLorentzVector lorentzNeutrino, lorentzSoloMuon, lorentzDiMuon1, lorentzDiMuon2;
 	int nParticles = 0;
 	
@@ -173,6 +173,7 @@ void status_file() {
 	TH1D* hPhiDiMuon2Bkg = new TH1D("hPhiDiMuon2Bkg","phi spectrum dimuon2 background",50,-PI,PI);
 
 	TH1D* hDPhiDiMuons = new TH1D("hDPhiDiMuons","#Delta#phi for dimuon pair;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDEtaDiMuons = new TH1D("hDEtaDiMuons","#Delta#eta for dimuon pair;#Delta#eta;Counts",100,-2.5,4);
 	TH1D* hDPhiSoloMuonDiMuons = new TH1D("hDPhiSoloMuonDiMuons","#Delta#phi for muon and di-muon pair from Bc-;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDPhiSoloMuonBarDiMuons = new TH1D("hDPhiSoloMuonBarDiMuons","#Delta#phi for muon and di-muon pair from Bc+;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,-4,4);
@@ -271,7 +272,12 @@ void status_file() {
 					// J/psi -> μ+μ-
 					if(diMuon1BcpIndex != -1 && diMuon2BcpIndex != -1 &&
 						(*vMother1)[diMuon1BcpIndex] == (*vMother1)[diMuon2BcpIndex]) {
-						hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1BcpIndex],(*vPhi)[diMuon2BcpIndex]));
+						DPhiDiMuons = DeltaPhi((*vPhi)[diMuon1BcpIndex],(*vPhi)[diMuon2BcpIndex]);
+						DEtaDiMuons = DeltaEta((*vEta)[diMuon1BcpIndex],(*vEta)[diMuon2BcpIndex]);
+						hDPhiDiMuons->Fill(DPhiDiMuons);
+						hDEtaDiMuons->Fill(DEtaDiMuons);
+						hDPhiSoloMuonBarDiMuons->Fill((*vPhi)[soloMuonBarIndex],DPhiDiMuons);
+						hDEtaSoloMuonBarDiMuons->Fill((*vEta)[soloMuonBarIndex],DEtaDiMuons);
 
 						hPtDiMuon1BcpSig->Fill((*vPt)[diMuon1BcpIndex]);
 						hEtaDiMuon1BcpSig->Fill((*vEta)[diMuon1BcpIndex]);
@@ -368,7 +374,12 @@ void status_file() {
 					// J/psi -> μ+μ-
 					if(diMuon1BcmIndex != -1 && diMuon2BcmIndex != -1 &&
 						(*vMother1)[diMuon1BcmIndex] == (*vMother1)[diMuon2BcmIndex]) {
-						hDPhiDiMuons->Fill(DeltaPhi((*vPhi)[diMuon1BcmIndex],(*vPhi)[diMuon2BcmIndex]));
+						DPhiDiMuons = DeltaPhi((*vPhi)[diMuon1BcmIndex],(*vPhi)[diMuon2BcmIndex]);
+						DEtaDiMuons = DeltaEta((*vEta)[diMuon1BcmIndex],(*vEta)[diMuon2BcmIndex]);
+						hDPhiDiMuons->Fill(DPhiDiMuons);
+						hDEtaDiMuons->Fill(DEtaDiMuons);
+						hDPhiSoloMuonDiMuons->Fill((*vPhi)[soloMuonIndex],DPhiDiMuons);
+						hDEtaSoloMuonDiMuons->Fill((*vEta)[soloMuonIndex],DEtaDiMuons);
 
 						hPtDiMuon1BcmSig->Fill((*vPt)[diMuon1BcmIndex]);
 						if (VERBOSE) { std::cout<<"pT dimuon = "<<(*vPt)[diMuon1BcmIndex]<<std::endl; }
