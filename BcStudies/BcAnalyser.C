@@ -536,7 +536,6 @@ void status_file() {
     std::cout<<"Analysis terminated. Succesful?"<<std::endl;
 }
 
-
 int BcAnalyser() {
 
     status_file();
