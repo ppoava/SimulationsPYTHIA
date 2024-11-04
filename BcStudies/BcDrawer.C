@@ -22,6 +22,10 @@ void setCanvasMargins(TCanvas *canvas, double_t LeftMargin, double_t RightMargin
   canvas->SetBottomMargin(BottomMargin);
 }
 
+
+
+    
+
 void drawCanvas() {
 
     std::string path = "/Users/pv280546/alice/SimulationsPYTHIA/BcStudies/";
@@ -41,6 +45,44 @@ void drawCanvas() {
     hInvMassWithoutNeutrino->Draw("hist E");
     hInvMass->Draw("same hist E");
     
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+
+    TCanvas* cDMass = new TCanvas("cDMass", "#Delta mass effect of excluding neutrino in reconstruction", 1200, 1000);
+    setCanvasMargins(cDMass, 0.20, 0.1, 0.1, 0.05);
+
+    // Create a new histogram to store delta mass values
+    int nEntries = hInvMass->GetEntries(); // Assuming hist1 and hist2 have the same binning
+    std::cout<<nEntries<<std::endl;
+    TH1F *hDMass = new TH1F("hDMass", "#Delta mass effect of excluding neutrino in reconstruction;Counts", nEntries, -10, 10);
+    
+    // Loop over the bins and calculate the delta mass
+    for (int i = 1; i <= nEntries; ++i) {
+        double mass1 = hInvMass->GetBinContent(i); // Get the center of the bin for hist1
+        double mass2 = hInvMassWithoutNeutrino->GetBinContent(i); // Get the center of the bin for hist2
+        std::cout<<mass2<<std::endl;
+        double deltaMass = mass1 - mass2;       // Calculate delta mass
+        std::cout<<deltaMass<<std::endl;
+
+        // Fill the delta histogram with the counts
+        double count1 = hInvMass->GetBinContent(i); // Count from hist1
+        double count2 = hInvMassWithoutNeutrino->GetBinContent(i); // Count from hist2
+
+        hDMass->Fill(deltaMass); // Fill deltaHist with the difference of counts
+    }
+    hDMass->GetXaxis()->SetRangeUser(-1,1);
+
+    cDMass->cd();
+    hDMass->Draw("hist E");
+
     /*
     TLegend* lhists_DPhi_pTHatMin = new TLegend(0.30, 0.6, 0.50, 0.75);
     lhists_DPhi_pTHatMin->SetTextSize(0.05);
