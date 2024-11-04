@@ -108,6 +108,7 @@ void status_file() {
 	// TH1D* hMass = new TH1D("hMass","Generic mass spectrum;phi;Counts",50,0,0.1);
 	TH1D* hInvMass = new TH1D("hInvMass","Invariant mass of Bc+ or Bc-;mass [GeV];Counts",50,0,8);
 	TH1D* hInvMassWithoutNeutrino = new TH1D("hInvMassWithoutNeutrino","Invariant mass of Bc+ or Bc- w/o neutrino;mass [GeV];Counts",50,0,8);
+	TH1D* hDMass = new TH1D("hDMass","#Delta mass effect of excluding neutrino;mass [GeV];Counts",50,0,6);
 
     // Neutrinos
     // --- Split in particle - antiparticle and signal - background
@@ -323,7 +324,10 @@ void status_file() {
 						if(VERBOSE) { std::cout<<"invariant mass Bc+ = "<<invariantMass<<std::endl; }
 
 						total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
-						hInvMassWithoutNeutrino->Fill(total.M());
+						double invariantMassWithoutNeutrino = total.M();
+						hInvMassWithoutNeutrino->Fill(invariantMassWithoutNeutrino);
+
+						hDMass->Fill(invariantMass-invariantMassWithoutNeutrino);
 					}
 				}
 			    
@@ -426,7 +430,10 @@ void status_file() {
 						if(VERBOSE) { std::cout<<"invariant mass Bc- = "<<invariantMass<<std::endl; }
 
 						total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
-						hInvMassWithoutNeutrino->Fill(total.M());
+						double invariantMassWithoutNeutrino = total.M();
+						hInvMassWithoutNeutrino->Fill(invariantMassWithoutNeutrino);
+
+						hDMass->Fill(invariantMass-invariantMassWithoutNeutrino);
 					}
 				}
 
