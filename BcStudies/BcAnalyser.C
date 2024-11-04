@@ -85,8 +85,9 @@ void status_file() {
 
 	// Variables used in this analyser
 	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1BcpIndex,diMuon2BcpIndex,diMuon1BcmIndex,diMuon2BcmIndex;
-	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID, DPhiDiMuons, DEtaDiMuons;
-	TLorentzVector lorentzNeutrino, lorentzSoloMuon, lorentzDiMuon1, lorentzDiMuon2;
+	Int_t neutrinoBkgIndex,neutrinoBarBkgIndex,soloMuonBkgIndex,soloMuonBarBkgIndex,diMuon1BkgIndex,diMuon2BkgIndex;
+	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID,DPhiDiMuons,DEtaDiMuons,DPhiDiMuonsBkg,DEtaDiMuonsBkg;
+	TLorentzVector lorentzNeutrino,lorentzSoloMuon,lorentzDiMuon1,lorentzDiMuon2;
 	int nParticles = 0;
 	
 	// There is a possiblity to change status settings for production studies
@@ -179,6 +180,13 @@ void status_file() {
 	TH1D* hDPhiSoloMuonBarDiMuons = new TH1D("hDPhiSoloMuonBarDiMuons","#Delta#phi for muon and di-muon pair from Bc+;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,0,4.5);
 	TH1D* hDEtaSoloMuonBarDiMuons = new TH1D("hDEtaSoloMuonBarDiMuons","#Delta#eta for muon and di-muon pair from Bc+;#Delta#eta;Counts",100,0,4.5);
+	//
+	TH1D* hDPhiDiMuonsBkg = new TH1D("hDPhiDiMuonsBkg","#Delta#phi for dimuon background pair;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDEtaDiMuonsBkg = new TH1D("hDEtaDiMuonsBkg","#Delta#eta for dimuon background pair;#Delta#eta;Counts",100,-2.5,4);
+	TH1D* hDPhiSoloMuonDiMuonsBkg = new TH1D("hDPhiSoloMuonDiMuonsBkg","#Delta#phi for muon and di-muon pair background;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDPhiSoloMuonBarDiMuonsBkg = new TH1D("hDPhiSoloMuonBarDiMuonsBkg","#Delta#phi for anti-muon and di-muon pair background;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
+	TH1D* hDEtaSoloMuonDiMuonsBkg = new TH1D("hDEtaSoloMuonDiMuonsBkg","#Delta#eta for muon and di-muon pair background;#Delta#eta;Counts",100,0,4.5);
+	TH1D* hDEtaSoloMuonBarDiMuonsBkg = new TH1D("hDEtaSoloMuonBarDiMuonsBkg","#Delta#eta for anti-muon and di-muon pair background;#Delta#eta;Counts",100,0,4.5);
 
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
@@ -200,6 +208,13 @@ void status_file() {
         diMuon2BcpIndex = -1;
 		diMuon1BcmIndex = -1;
         diMuon2BcmIndex = -1;
+		//
+		neutrinoBkgIndex = -1;
+        neutrinoBarBkgIndex = -1;
+        soloMuonBkgIndex = -1;
+        soloMuonBarBkgIndex = -1;
+        diMuon1BkgIndex = -1;
+        diMuon2BkgIndex = -1;
 
 		for(int ipart = 0; ipart < nparticles; ipart++) {
             // TODO: this can be done easier later on, no?
@@ -440,40 +455,68 @@ void status_file() {
                 // Background particles
                 // TODO: think if the checks need to include not from J/psi filter
 			    if(motherID != 541 && id == 14) { // found muon neutrino (B_cˆ{+} background)
+					neutrinoBkgIndex = ipart;
 				    hPtNeutrinoBkg->Fill(pT);
 				    hEtaNeutrinoBkg->Fill(eta);
 				    hPhiNeutrinoBkg->Fill(phi);
 			    }
 
 			    if(motherID != -541 && id == -14) { // found anti-muon neutrino (B_cˆ{-} background)
+					neutrinoBarBkgIndex = ipart;
 				    hPtNeutrinoBarBkg->Fill(pT);
 				    hEtaNeutrinoBarBkg->Fill(eta);
 				    hPhiNeutrinoBarBkg->Fill(phi);
 			    }
 
                 if(motherID != 541 && motherID != 443 && id == -13) { // found standalone anti-muon (from B_cˆ{+} background)
+					soloMuonBkgIndex = ipart;
                     hPtSoloMuonBkg->Fill(pT);
 				    hEtaSoloMuonBkg->Fill(eta);
 				    hPhiSoloMuonBkg->Fill(phi);
                 }
 
                 if(motherID != -541 && motherID != 443 && id == 13) { // found standalone muon (from B_cˆ{-} background)
+					soloMuonBarBkgIndex = ipart;
                     hPtSoloMuonBarBkg->Fill(pT);
 				    hEtaSoloMuonBarBkg->Fill(eta);
 				    hPhiSoloMuonBarBkg->Fill(phi);
                 }
 
                 if(grandMotherID != 541 && grandMotherID != -541 && motherID == 443 && id == -13) { // found anti-muon in di-muon pair (from J/psi)
+					diMuon1BkgIndex = ipart;
                     hPtDiMuon1Bkg->Fill(pT);
 				    hEtaDiMuon1Bkg->Fill(eta);
 				    hPhiDiMuon1Bkg->Fill(phi);
                 }
 
                 if(grandMotherID != 541 && grandMotherID != -541 && motherID == 443 && id == 13) { // found anti-muon in di-muon pair (from J/psi)
+					diMuon2BkgIndex = ipart;
                     hPtDiMuon2Bkg->Fill(pT);
 				    hEtaDiMuon2Bkg->Fill(eta);
 				    hPhiDiMuon2Bkg->Fill(phi);
-                }
+                }		
+
+				// Calculate uncorrelated delta phi and delta eta
+				// TODO: not completely analogous to signal treatment
+				if(soloMuonBkgIndex != -1 && diMuon1BkgIndex != -1 && diMuon2BkgIndex != -1) {
+					DPhiDiMuonsBkg = DeltaPhi((*vPhi)[diMuon1BkgIndex],(*vPhi)[diMuon2BkgIndex]);
+					DEtaDiMuonsBkg = DeltaEta((*vEta)[diMuon1BkgIndex],(*vEta)[diMuon2BkgIndex]);
+					hDPhiDiMuonsBkg->Fill(DPhiDiMuons);
+					hDEtaDiMuonsBkg->Fill(DEtaDiMuons);
+
+					hDPhiSoloMuonDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBkgIndex],DPhiDiMuonsBkg));
+					hDEtaSoloMuonDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBkgIndex],DEtaDiMuonsBkg));
+				}
+
+				if(soloMuonBarBkgIndex != -1 && diMuon1BkgIndex != -1 && diMuon2BkgIndex != -1) {
+					DPhiDiMuonsBkg = DeltaPhi((*vPhi)[diMuon1BkgIndex],(*vPhi)[diMuon2BkgIndex]);
+					DEtaDiMuonsBkg = DeltaEta((*vEta)[diMuon1BkgIndex],(*vEta)[diMuon2BkgIndex]);
+					hDPhiDiMuonsBkg->Fill(DPhiDiMuons);
+					hDEtaDiMuonsBkg->Fill(DEtaDiMuons);
+
+					hDPhiSoloMuonBarDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBarBkgIndex],DPhiDiMuonsBkg));
+					hDEtaSoloMuonBarDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],DEtaDiMuonsBkg));
+				}
 
 			} // pT > 1 GeV cut
 		} // Particle loop
