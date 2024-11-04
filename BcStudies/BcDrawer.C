@@ -35,10 +35,11 @@ void drawCanvas() {
     TCanvas* cInvMass = new TCanvas("cInvMass", "Compare invariant mass with and w/o neutrino", 1200, 1000);
     setCanvasMargins(cInvMass, 0.20, 0.1, 0.1, 0.05);
     hInvMassWithoutNeutrino->SetLineColor(kRed);
+    hInvMassWithoutNeutrino->GetYaxis()->SetRangeUser(0, 45e3);
 
     cInvMass->cd();
-    hInvMass->Draw("hist E");
-    hInvMassWithoutNeutrino->Draw("same hist E");
+    hInvMassWithoutNeutrino->Draw("hist E");
+    hInvMass->Draw("same hist E");
     
     /*
     TLegend* lhists_DPhi_pTHatMin = new TLegend(0.30, 0.6, 0.50, 0.75);
