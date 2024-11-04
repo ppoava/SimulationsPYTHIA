@@ -32,11 +32,11 @@ void status_file() {
 	
 	// Define the TChain
 	TChain *ch1 = new TChain("tree");
-	TFile *output = new TFile("analysed_output.root","RECREATE");
+	TFile *output = new TFile("analysed_output_31_OKT_2024.root","RECREATE");
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output_1e9_28_OKT_2024.root");
+	ch1->Add("output_1e9_31_OKT_2024.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
