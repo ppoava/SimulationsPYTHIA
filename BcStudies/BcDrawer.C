@@ -32,6 +32,8 @@ void drawCanvas() {
     TH1D* hDMass = (TH1D*)rootFile->Get("hDMass");
     TH1D* hPtNeutrinoSig = (TH1D*)rootFile->Get("hPtNeutrinoSig");
     TH1D* hPtNeutrinoBkg = (TH1D*)rootFile->Get("hPtNeutrinoBkg");
+    TH1D* hPtSoloMuonSig = (TH1D*)rootFile->Get("hPtSoloMuonSig");
+    TH1D* hPtSoloMuonBkg = (TH1D*)rootFile->Get("hPtSoloMuonBkg");
     TH1D* hEtaNeutrinoSig = (TH1D*)rootFile->Get("hEtaNeutrinoSig");
     TH1D* hEtaNeutrinoBkg = (TH1D*)rootFile->Get("hEtaNeutrinoBkg");
     TH1D* hPhiNeutrinoSig = (TH1D*)rootFile->Get("hPhiNeutrinoSig");
@@ -52,6 +54,8 @@ void drawCanvas() {
 
     hPtNeutrinoSig->Scale(1/hPtNeutrinoSig->Integral());
     hPtNeutrinoBkg->Scale(1/hPtNeutrinoBkg->Integral());
+    hPtSoloMuonSig->Scale(1/hPtSoloMuonSig->Integral());
+    hPtSoloMuonBkg->Scale(1/hPtSoloMuonBkg->Integral());
     hEtaNeutrinoSig->Scale(1/hEtaNeutrinoSig->Integral());
     hEtaNeutrinoBkg->Scale(1/hEtaNeutrinoBkg->Integral());
     hPhiNeutrinoSig->Scale(1/hPhiNeutrinoSig->Integral());
@@ -120,7 +124,7 @@ void drawCanvas() {
     hPtNeutrinoSig->SetLineColor(kRed);
     hPtNeutrinoBkg->SetLineColor(kBlack);
     hPtNeutrinoBkg->GetYaxis()->SetTitle("self-normalised counts");
-    hPtNeutrinoBkg->GetXaxis()->SetTitle("mass [GeV]");
+    hPtNeutrinoBkg->GetXaxis()->SetTitle("pT [GeV]");
 
     TLegend* lPtNeutrino = new TLegend(0.30, 0.6, 0.50, 0.75);
     lPtNeutrino->SetTextSize(0.05);
@@ -133,6 +137,36 @@ void drawCanvas() {
     hPtNeutrinoBkg->Draw("hist E");
     hPtNeutrinoSig->Draw("same hist E");
     lPtNeutrino->Draw();
+
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+
+    TCanvas* cPtSoloMuon = new TCanvas("cPtSoloMuon", "Compare signal and background solo muons", 1200, 1000);
+    setCanvasMargins(cPtSoloMuon, 0.20, 0.1, 0.1, 0.05);
+    hPtSoloMuonSig->SetLineColor(kRed);
+    hPtSoloMuonBkg->SetLineColor(kBlack);
+    hPtSoloMuonBkg->GetYaxis()->SetTitle("self-normalised counts");
+    hPtSoloMuonBkg->GetXaxis()->SetTitle("pT [GeV]");
+
+    TLegend* lPtSoloMuon = new TLegend(0.30, 0.6, 0.50, 0.75);
+    lPtSoloMuon->SetTextSize(0.05);
+    lPtSoloMuon->SetBorderSize(0);
+    lPtSoloMuon->SetMargin(0.5);
+    lPtSoloMuon->AddEntry(hPtSoloMuonSig, "signal", "l");
+    lPtSoloMuon->AddEntry(hPtSoloMuonBkg, "background", "l");
+
+    cPtSoloMuon->cd();
+    hPtSoloMuonBkg->Draw("hist E");
+    hPtSoloMuonSig->Draw("same hist E");
+    lPtSoloMuon->Draw();
 
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
@@ -354,6 +388,8 @@ void drawCanvas() {
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
+
+    // add pT comparison solo muon signal + background
 
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
