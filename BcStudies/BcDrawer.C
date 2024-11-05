@@ -43,10 +43,10 @@ void drawCanvas() {
     TH1D* hDPhiDiMuonsBkg = (TH1D*)rootFile->Get("hDPhiDiMuonsBkg");
     TH1D* hDEtaDiMuons = (TH1D*)rootFile->Get("hDEtaDiMuons");
     TH1D* hDEtaDiMuonsBkg = (TH1D*)rootFile->Get("hDEtaDiMuonsBkg");
-    TH1D* hDPhiSoloMuonDiMuons = (TH1D*)rootFile->Get("hDPhiSoloMuonDiMuons");
-    TH1D* hDPhiSoloMuonDiMuonsBkg = (TH1D*)rootFile->Get("hDPhiSoloMuonDiMuonsBkg");
-    TH1D* hDEtaSoloMuonDiMuons = (TH1D*)rootFile->Get("hDEtaSoloMuonDiMuons");
-    TH1D* hDEtaSoloMuonDiMuonsBkg = (TH1D*)rootFile->Get("hDEtaSoloMuonDiMuonsBkg");
+    TH1D* hDPhiSoloMuonBarDiMuons = (TH1D*)rootFile->Get("hDPhiSoloMuonBarDiMuons");
+    TH1D* hDPhiSoloMuonBarDiMuonsBkg = (TH1D*)rootFile->Get("hDPhiSoloMuonBarDiMuonsBkg");
+    TH1D* hDEtaSoloMuonBarDiMuons = (TH1D*)rootFile->Get("hDEtaSoloMuonBarDiMuons");
+    TH1D* hDEtaSoloMuonBarDiMuonsBkg = (TH1D*)rootFile->Get("hDEtaSoloMuonBarDiMuonsBkg");
 
     /*
     TH1D*  = (TH1D*)rootFile->Get("");
@@ -65,10 +65,10 @@ void drawCanvas() {
     hDPhiDiMuonsBkg->Scale(1/hDPhiDiMuonsBkg->Integral());
     hDEtaDiMuons->Scale(1/hDEtaDiMuons->Integral());
     hDEtaDiMuonsBkg->Scale(1/hDEtaDiMuonsBkg->Integral());
-    hDPhiSoloMuonDiMuons->Scale(1/hDPhiSoloMuonDiMuons->Integral());
-    hDPhiSoloMuonDiMuonsBkg->Scale(1/hDPhiSoloMuonDiMuonsBkg->Integral());
-    hDEtaSoloMuonDiMuons->Scale(1/hDEtaSoloMuonDiMuons->Integral());
-    hDEtaSoloMuonDiMuonsBkg->Scale(1/hDEtaSoloMuonDiMuonsBkg->Integral());
+    hDPhiSoloMuonBarDiMuons->Scale(1/hDPhiSoloMuonBarDiMuons->Integral());
+    hDPhiSoloMuonBarDiMuonsBkg->Scale(1/hDPhiSoloMuonBarDiMuonsBkg->Integral());
+    hDEtaSoloMuonBarDiMuons->Scale(1/hDEtaSoloMuonBarDiMuons->Integral());
+    hDEtaSoloMuonBarDiMuonsBkg->Scale(1/hDEtaSoloMuonBarDiMuonsBkg->Integral());
 
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
@@ -329,24 +329,24 @@ void drawCanvas() {
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
 
-    TCanvas* cDPhiSoloMuonDiMuons = new TCanvas("cDPhiSoloMuonDiMuons", "Compare #Delta#phi (solo muon,dimuons) signal and background", 1200, 1000);
-    setCanvasMargins(cDPhiSoloMuonDiMuons, 0.20, 0.1, 0.1, 0.05);
-    hDPhiSoloMuonDiMuons->SetLineColor(kRed);
-    hDPhiSoloMuonDiMuonsBkg->SetLineColor(kBlack);
-    hDPhiSoloMuonDiMuons->GetYaxis()->SetTitle("self-normalised counts");
-    hDPhiSoloMuonDiMuons->GetXaxis()->SetTitle("#delta#phi");
+    TCanvas* cDPhiSoloMuonBarDiMuons = new TCanvas("cDPhiSoloMuonBarDiMuons", "Compare #Delta#phi (solo muon,dimuons) signal and background", 1200, 1000);
+    setCanvasMargins(cDPhiSoloMuonBarDiMuons, 0.20, 0.1, 0.1, 0.05);
+    hDPhiSoloMuonBarDiMuons->SetLineColor(kRed);
+    hDPhiSoloMuonBarDiMuonsBkg->SetLineColor(kBlack);
+    hDPhiSoloMuonBarDiMuons->GetYaxis()->SetTitle("self-normalised counts");
+    hDPhiSoloMuonBarDiMuons->GetXaxis()->SetTitle("#delta#phi");
 
-    TLegend* lDPhiSoloMuonDiMuons = new TLegend(0.30, 0.6, 0.50, 0.75);
-    lDPhiSoloMuonDiMuons->SetTextSize(0.05);
-    lDPhiSoloMuonDiMuons->SetBorderSize(0);
-    lDPhiSoloMuonDiMuons->SetMargin(0.5);
-    lDPhiSoloMuonDiMuons->AddEntry(hDPhiDiMuons, "signal", "l");
-    lDPhiSoloMuonDiMuons->AddEntry(hDPhiDiMuonsBkg, "background", "l");
+    TLegend* lDPhiSoloMuonBarDiMuons = new TLegend(0.30, 0.6, 0.50, 0.75);
+    lDPhiSoloMuonBarDiMuons->SetTextSize(0.05);
+    lDPhiSoloMuonBarDiMuons->SetBorderSize(0);
+    lDPhiSoloMuonBarDiMuons->SetMargin(0.5);
+    lDPhiSoloMuonBarDiMuons->AddEntry(hDPhiSoloMuonBarDiMuons, "signal", "l");
+    lDPhiSoloMuonBarDiMuons->AddEntry(hDPhiSoloMuonBarDiMuonsBkg, "background", "l");
 
-    cDPhiSoloMuonDiMuons->cd();
-    hDPhiSoloMuonDiMuons->Draw("hist E");
-    hDPhiSoloMuonDiMuonsBkg->Draw("same hist E");
-    lDPhiSoloMuonDiMuons->Draw();
+    cDPhiSoloMuonBarDiMuons->cd();
+    hDPhiSoloMuonBarDiMuons->Draw("hist E");
+    hDPhiSoloMuonBarDiMuonsBkg->Draw("same hist E");
+    lDPhiSoloMuonBarDiMuons->Draw();
 
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
@@ -359,24 +359,24 @@ void drawCanvas() {
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
 
-    TCanvas* cDEtaSoloMuonDiMuons = new TCanvas("cDEtaSoloMuonDiMuons", "Compare #Delta#eta (solo muon,dimuons) signal and background", 1200, 1000);
-    setCanvasMargins(cDEtaSoloMuonDiMuons, 0.20, 0.1, 0.1, 0.05);
-    hDEtaSoloMuonDiMuons->SetLineColor(kRed);
-    hDEtaSoloMuonDiMuonsBkg->SetLineColor(kBlack);
-    hDEtaSoloMuonDiMuons->GetYaxis()->SetTitle("self-normalised counts");
-    hDEtaSoloMuonDiMuons->GetXaxis()->SetTitle("#delta#eta");
+    TCanvas* cDEtaSoloMuonBarDiMuons = new TCanvas("cDEtaSoloMuonBarDiMuons", "Compare #Delta#eta (solo muon,dimuons) signal and background", 1200, 1000);
+    setCanvasMargins(cDEtaSoloMuonBarDiMuons, 0.20, 0.1, 0.1, 0.05);
+    hDEtaSoloMuonBarDiMuons->SetLineColor(kRed);
+    hDEtaSoloMuonBarDiMuonsBkg->SetLineColor(kBlack);
+    hDEtaSoloMuonBarDiMuons->GetYaxis()->SetTitle("self-normalised counts");
+    hDEtaSoloMuonBarDiMuons->GetXaxis()->SetTitle("#delta#eta");
 
-    TLegend* lDEtaSoloMuonDiMuons = new TLegend(0.30, 0.6, 0.50, 0.75);
-    lDEtaSoloMuonDiMuons->SetTextSize(0.05);
-    lDEtaSoloMuonDiMuons->SetBorderSize(0);
-    lDEtaSoloMuonDiMuons->SetMargin(0.5);
-    lDEtaSoloMuonDiMuons->AddEntry(hDPhiDiMuons, "signal", "l");
-    lDEtaSoloMuonDiMuons->AddEntry(hDPhiDiMuonsBkg, "background", "l");
+    TLegend* lDEtaSoloMuonBarDiMuons = new TLegend(0.30, 0.6, 0.50, 0.75);
+    lDEtaSoloMuonBarDiMuons->SetTextSize(0.05);
+    lDEtaSoloMuonBarDiMuons->SetBorderSize(0);
+    lDEtaSoloMuonBarDiMuons->SetMargin(0.5);
+    lDEtaSoloMuonBarDiMuons->AddEntry(hDEtaSoloMuonBarDiMuons, "signal", "l");
+    lDEtaSoloMuonBarDiMuons->AddEntry(hDEtaSoloMuonBarDiMuonsBkg, "background", "l");
 
-    cDEtaSoloMuonDiMuons->cd();
-    hDEtaSoloMuonDiMuons->Draw("hist E");
-    hDEtaSoloMuonDiMuonsBkg->Draw("same hist E");
-    lDEtaSoloMuonDiMuons->Draw();
+    cDEtaSoloMuonBarDiMuons->cd();
+    hDEtaSoloMuonBarDiMuons->Draw("hist E");
+    hDEtaSoloMuonBarDiMuonsBkg->Draw("same hist E");
+    lDEtaSoloMuonBarDiMuons->Draw();
 
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
