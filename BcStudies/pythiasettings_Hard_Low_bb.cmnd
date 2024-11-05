@@ -6,7 +6,7 @@
 
 
 ! Number of events
-Main:numberOfEvents = 1000
+Main:numberOfEvents = 1000000
 
 ! More information about these commands can be found on https://pythia.org/latest-manual/MainProgramSettings.html
 Init:showMultipartonInteractions = off
@@ -63,25 +63,34 @@ PhaseSpace:pTHatMin = 1.
 ! -541:mayDecay = off			! Bc-
 
 ! We study only one specific channel for the Bc+ and Bc-
-! Disable all B_c+ decays
-! 541:onMode = off
-! Enable only B_c+ -> J/psi + mu+ + nu_mu
-! 541:oneChannel = 1 1.0 0 443 13 -14
-
-! Disable all B_c- decays
-! -541:onMode = off
-! Enable only B_c- -> J/psi + mu- + anti-nu_mu
-! -541:oneChannel = 1 1.0 0 443 -13 14
-
+! And some backgrounds are included too
+! IMPORT : ONLY STUDY ONE CHANNEL AT A GIVEN TIME
 ! Disable all decays for Bc+ and Bc-
 541:onMode = off            # Disable all decays for B_c^+
 -541:onMode = off           # Disable all decays for B_c^-
-
-! Enable specific decay channels
 541:onIfMatch = -13 14 443  # Bc+ -> mu+ nu_mu J/psi
--541:onIfMatch = 13 -14 443  # Bc- -> mu- anti-nu_mu J/psi
+-541:onIfMatch = 13 -14 443 # Bc- -> mu- anti-nu_mu J/psi
 
 ! Disable all J/psi decays
 443:onMode = off
 ! Enable only J/psi -> mu+ mu-
 443:onIfMatch = 13 -13
+
+! BACKGROUND PROCESSES
+! Allow Bc+ -> tau+ nu_tau J/psi
+! 541:onIfMatch = -15 16 443  # Bc+ -> tau+ nu_tau J/psi
+! -541:onIfMatch = 15 -16 443 # Bc- -> tau- anti-nu_tau J/psi
+! 15:onMode = off             # Disable all tau- decays
+! -15:onMode = off            # Disable all tau+ decays
+! 15:onIfMatch = 13 16        # tau- -> mu- nu_tau
+! -15:onIfMatch = -13 -16     # tau+ -> mu+ anti-nu_tau
+
+! Allow Bc -> J/psi (D -> mu + anything) + anything
+! 541:onIfMatch = 443 411     # Bc+ -> J/psi D+
+! 541:onIfMatch = 443 -411    # Bc+ -> J/psi D-
+! -541:onIfMatch = 443 411    # Bc- -> J/psi D+
+! -541:onIfMatch = 443 -411   # Bc- -> J/psi D-
+! 411:onMode = off            # Disable all decays for D+
+! -411:onMode = off           # Disable all decays for D-
+! 411:onIfMatch = 13 -16      # D+ -> mu+ + anything
+! -411:onIfMatch = -13 16     # D- -> mu- + anything
