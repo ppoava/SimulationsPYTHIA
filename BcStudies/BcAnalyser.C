@@ -26,17 +26,86 @@ Double_t DeltaEta(Double_t eta1, Double_t eta2) {
 	return (eta1 - eta2);
 	}	
 
+Double_t InvariantMass(Int_t neutrinoIndex, Int_t soloMuonIndex, Int_t diMuon1Index, Int_t diMuon2Index,
+						vector<Double_t>* vPt, vector<Double_t>* vEta, vector<Double_t>* vPhi,
+						vector<Double_t>* vM) {
+	TLorentzVector lorentzNeutrino,lorentzSoloMuon,lorentzDiMuon1,lorentzDiMuon2;
+
+	lorentzNeutrino.SetPtEtaPhiM(
+		(*vPt)[neutrinoIndex], 
+		(*vEta)[neutrinoIndex], 
+		(*vPhi)[neutrinoIndex], 
+		(*vM)[neutrinoIndex]
+	);
+	lorentzSoloMuon.SetPtEtaPhiM(
+		(*vPt)[soloMuonIndex], 
+		(*vEta)[soloMuonIndex], 
+		(*vPhi)[soloMuonIndex], 
+		(*vM)[soloMuonIndex]
+	);
+	lorentzDiMuon1.SetPtEtaPhiM(
+		(*vPt)[diMuon1Index], 
+		(*vEta)[diMuon1Index], 
+		(*vPhi)[diMuon1Index], 
+		(*vM)[diMuon1Index]
+	);
+	lorentzDiMuon2.SetPtEtaPhiM(
+		(*vPt)[diMuon2Index], 
+		(*vEta)[diMuon2Index], 
+		(*vPhi)[diMuon2Index], 
+		(*vM)[diMuon2Index]
+	);
+
+	// Sum the four vectors to get the total four-momentum
+	TLorentzVector total = lorentzNeutrino + lorentzSoloMuon +
+							lorentzDiMuon1  + lorentzDiMuon2;
+
+	// Calculate the invariant mass of the four-particle system
+	return total.M();
+}
+
+Double_t InvariantMassWithoutNeutrino(Int_t soloMuonIndex, Int_t diMuon1Index, Int_t diMuon2Index,
+									vector<Double_t>* vPt, vector<Double_t>* vEta, vector<Double_t>* vPhi,
+									vector<Double_t>* vM) {
+	TLorentzVector lorentzSoloMuon,lorentzDiMuon1,lorentzDiMuon2;
+
+	lorentzSoloMuon.SetPtEtaPhiM(
+		(*vPt)[soloMuonIndex], 
+		(*vEta)[soloMuonIndex], 
+		(*vPhi)[soloMuonIndex], 
+		(*vM)[soloMuonIndex]
+	);
+	lorentzDiMuon1.SetPtEtaPhiM(
+		(*vPt)[diMuon1Index], 
+		(*vEta)[diMuon1Index], 
+		(*vPhi)[diMuon1Index], 
+		(*vM)[diMuon1Index]
+	);
+	lorentzDiMuon2.SetPtEtaPhiM(
+		(*vPt)[diMuon2Index], 
+		(*vEta)[diMuon2Index], 
+		(*vPhi)[diMuon2Index], 
+		(*vM)[diMuon2Index]
+	);
+
+	// Sum the four vectors to get the total four-momentum
+	TLorentzVector total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
+
+	// Calculate the invariant mass of the four-particle system
+	return total.M();
+}
+
 void status_file() {
 	// This functions takes the trigger and associate id and creates a ROOT output file with the same filename
     // containing the histograms produced in this macro
 	
 	// Define the TChain
 	TChain *ch1 = new TChain("tree");
-	TFile *output = new TFile("analysed_output_31_OKT_2024.root","RECREATE");
+	TFile *output = new TFile("analysed_output.root","RECREATE");
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output_1e9_31_OKT_2024.root");
+	ch1->Add("output.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
@@ -87,7 +156,6 @@ void status_file() {
 	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1BcpIndex,diMuon2BcpIndex,diMuon1BcmIndex,diMuon2BcmIndex;
 	Int_t neutrinoBkgIndex,neutrinoBarBkgIndex,soloMuonBkgIndex,soloMuonBarBkgIndex,diMuon1BkgIndex,diMuon2BkgIndex;
 	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID,DPhiDiMuons,DEtaDiMuons,DPhiDiMuonsBkg,DEtaDiMuonsBkg;
-	TLorentzVector lorentzNeutrino,lorentzSoloMuon,lorentzDiMuon1,lorentzDiMuon2;
 	int nParticles = 0;
 	
 	// There is a possiblity to change status settings for production studies
@@ -107,8 +175,8 @@ void status_file() {
     // TH1D* hY = new TH1D("hY","Generic rapidity spectrum;y;Counts",50,2.5,4);
     TH1D* hPhi = new TH1D("hPhi","Generic phi spectrum;phi;Counts",50,-PI,PI);
 	// TH1D* hMass = new TH1D("hMass","Generic mass spectrum;phi;Counts",50,0,0.1);
-	TH1D* hInvMass = new TH1D("hInvMass","Invariant mass of Bc+ or Bc-;mass [GeV];Counts",50,0,8);
-	TH1D* hInvMassWithoutNeutrino = new TH1D("hInvMassWithoutNeutrino","Invariant mass of Bc+ or Bc- w/o neutrino;mass [GeV];Counts",50,0,8);
+	TH1D* hInvMass = new TH1D("hInvMass","Invariant mass of Bc+;mass [GeV];Counts",50,0,8);
+	TH1D* hInvMassWithoutNeutrino = new TH1D("hInvMassWithoutNeutrino","Invariant mass of Bc+ w/o neutrino;mass [GeV];Counts",50,0,8);
 	TH1D* hDMass = new TH1D("hDMass","#Delta mass effect of excluding neutrino;mass [GeV];Counts",50,0,6);
 
     // Neutrinos
@@ -304,44 +372,16 @@ void status_file() {
 						hPhiDiMuon2BcpSig->Fill((*vPhi)[diMuon2BcpIndex]);
 
 						// Full decay reconstructed: invariant mass
-						lorentzNeutrino.SetPtEtaPhiM(
-							(*vPt)[neutrinoIndex], 
-							(*vEta)[neutrinoIndex], 
-							(*vPhi)[neutrinoIndex], 
-							(*vM)[neutrinoIndex]
-						);
-						lorentzSoloMuon.SetPtEtaPhiM(
-							(*vPt)[soloMuonBarIndex], 
-							(*vEta)[soloMuonBarIndex], 
-							(*vPhi)[soloMuonBarIndex], 
-							(*vM)[soloMuonBarIndex]
-						);
-						lorentzDiMuon1.SetPtEtaPhiM(
-							(*vPt)[diMuon1BcpIndex], 
-							(*vEta)[diMuon1BcpIndex], 
-							(*vPhi)[diMuon1BcpIndex], 
-							(*vM)[diMuon1BcpIndex]
-						);
-						lorentzDiMuon2.SetPtEtaPhiM(
-							(*vPt)[diMuon2BcpIndex], 
-							(*vEta)[diMuon2BcpIndex], 
-							(*vPhi)[diMuon2BcpIndex], 
-							(*vM)[diMuon2BcpIndex]
-						);
-    
-    					// Sum the four vectors to get the total four-momentum
-    					TLorentzVector total = lorentzNeutrino + lorentzSoloMuon +
-											   lorentzDiMuon1  + lorentzDiMuon2;
-    
-    					// Calculate the invariant mass of the four-particle system
-					    double invariantMass = total.M();
+						Double_t invariantMass = InvariantMass(neutrinoIndex,soloMuonBarIndex, 
+																diMuon1BcpIndex,diMuon2BcpIndex,
+																vPt,vEta,vPhi,vM);
 						hInvMass->Fill(invariantMass);
 						if(VERBOSE) { std::cout<<"invariant mass Bc+ = "<<invariantMass<<std::endl; }
-
-						total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
-						double invariantMassWithoutNeutrino = total.M();
+						double invariantMassWithoutNeutrino = InvariantMassWithoutNeutrino(
+																soloMuonBarIndex, 
+																diMuon1BcpIndex,diMuon2BcpIndex,
+																vPt,vEta,vPhi,vM);
 						hInvMassWithoutNeutrino->Fill(invariantMassWithoutNeutrino);
-
 						hDMass->Fill(invariantMass-invariantMassWithoutNeutrino);
 					}
 				}
@@ -408,47 +448,20 @@ void status_file() {
 						hPtDiMuon2BcmSig->Fill((*vPt)[diMuon2BcmIndex]);
 						hEtaDiMuon2BcmSig->Fill((*vEta)[diMuon2BcmIndex]);
 						hPhiDiMuon2BcmSig->Fill((*vPhi)[diMuon2BcmIndex]);
-
-						// Full decay reconstructed: invariant mass
-						lorentzNeutrino.SetPtEtaPhiM(
-							(*vPt)[neutrinoBarIndex], 
-							(*vEta)[neutrinoBarIndex], 
-							(*vPhi)[neutrinoBarIndex], 
-							(*vM)[neutrinoBarIndex]
-						);
-						lorentzSoloMuon.SetPtEtaPhiM(
-							(*vPt)[soloMuonIndex], 
-							(*vEta)[soloMuonIndex], 
-							(*vPhi)[soloMuonIndex], 
-							(*vM)[soloMuonIndex]
-						);
-						lorentzDiMuon1.SetPtEtaPhiM(
-							(*vPt)[diMuon1BcmIndex], 
-							(*vEta)[diMuon1BcmIndex], 
-							(*vPhi)[diMuon1BcmIndex], 
-							(*vM)[diMuon1BcmIndex]
-						);
-						lorentzDiMuon2.SetPtEtaPhiM(
-							(*vPt)[diMuon2BcmIndex], 
-							(*vEta)[diMuon2BcmIndex], 
-							(*vPhi)[diMuon2BcmIndex], 
-							(*vM)[diMuon2BcmIndex]
-						);
-    
-    					// Sum the four vectors to get the total four-momentum
-    					TLorentzVector total = lorentzNeutrino + lorentzSoloMuon +
-											   lorentzDiMuon1  + lorentzDiMuon2;
     
     					// Calculate the invariant mass of the four-particle system
-					    double invariantMass = total.M();
-						hInvMass->Fill(invariantMass);
-						if(VERBOSE) { std::cout<<"invariant mass Bc- = "<<invariantMass<<std::endl; }
+						// Only the Bc+ system is used from now on
+						// Double_t invariantMass = InvariantMass(neutrinoBarIndex,soloMuonIndex, 
+						//										diMuon1BcmIndex,diMuon2BcmIndex,
+						//										vPt,vEta,vPhi,vM);
+						// hInvMass->Fill(invariantMass);
+						// if(VERBOSE) { std::cout<<"invariant mass Bc- = "<<invariantMass<<std::endl; }
 
-						total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
-						double invariantMassWithoutNeutrino = total.M();
-						hInvMassWithoutNeutrino->Fill(invariantMassWithoutNeutrino);
+						// total = lorentzSoloMuon + lorentzDiMuon1 + lorentzDiMuon2;
+						// double invariantMassWithoutNeutrino = total.M();
+						// hInvMassWithoutNeutrino->Fill(invariantMassWithoutNeutrino);
 
-						hDMass->Fill(invariantMass-invariantMassWithoutNeutrino);
+						// hDMass->Fill(invariantMass-invariantMassWithoutNeutrino);
 					}
 				}
 
@@ -516,6 +529,11 @@ void status_file() {
 
 					hDPhiSoloMuonBarDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBarBkgIndex],DPhiDiMuonsBkg));
 					hDEtaSoloMuonBarDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],DEtaDiMuonsBkg));
+				}
+
+				// Study backgrounds : reconstruction with fake J/psi (including and excluding neutrinos)
+				if(soloMuonBarIndex != -1 && diMuon1BkgIndex != -1 && diMuon2BkgIndex != -1) {// fake J/psi, real muon
+
 				}
 
 			} // pT > 1 GeV cut
