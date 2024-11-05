@@ -579,8 +579,8 @@ void status_file() {
 							(*vM)[diMuon2BkgIndex]
 						);
 						LVjpsi = LVdiMuon1+LVdiMuon2;
-						hDPhiSoloMuonDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBarBkgIndex],LVjpsi.Phi()));
-						hDEtaSoloMuonDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],LVjpsi.Eta()));
+						hDPhiSoloMuonBarDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBarBkgIndex],LVjpsi.Phi()));
+						hDEtaSoloMuonBarDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],LVjpsi.Eta()));
 				}
 
 				// Study backgrounds : reconstruction with fake solo muon (including and excluding neutrinos)
