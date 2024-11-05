@@ -101,7 +101,7 @@ void status_file() {
 	
 	// Define the TChain
 	TChain *ch1 = new TChain("tree");
-	TFile *output = new TFile("analysed_output_test.root","RECREATE");
+	TFile *output = new TFile("analysed_output_31_OKT_2024.root","RECREATE");
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
@@ -156,6 +156,7 @@ void status_file() {
 	Int_t id,neutrinoIndex,neutrinoBarIndex,soloMuonIndex,soloMuonBarIndex,diMuon1BcpIndex,diMuon2BcpIndex,diMuon1BcmIndex,diMuon2BcmIndex;
 	Int_t neutrinoBkgIndex,neutrinoBarBkgIndex,soloMuonBkgIndex,soloMuonBarBkgIndex,diMuon1BkgIndex,diMuon2BkgIndex;
 	Double_t pT,m,phi,status,eta,y,mother1,grandMother1,motherID,grandMotherID,DPhiDiMuons,DEtaDiMuons,DPhiDiMuonsBkg,DEtaDiMuonsBkg;
+	TLorentzVector LVdiMuon1,LVdiMuon2,LVjpsi;
 	int nParticles = 0;
 	
 	// There is a possiblity to change status settings for production studies
@@ -178,6 +179,7 @@ void status_file() {
 	TH1D* hInvMass = new TH1D("hInvMass","Invariant mass of Bc+;mass [GeV];Counts",50,0,8);
 	TH1D* hInvMassWithoutNeutrino = new TH1D("hInvMassWithoutNeutrino","Invariant mass of Bc+ w/o neutrino;mass [GeV];Counts",50,0,8);
 	TH1D* hDMass = new TH1D("hDMass","#Delta mass effect of excluding neutrino;mass [GeV];Counts",50,0,6);
+	TH1D* hInvMassJpsi = new TH1D("hInvMassJpsi","Invariant mass of Jpsi;mass [GeV];Counts",50,0,8);
 
     // Neutrinos
     // --- Split in particle - antiparticle and signal - background
@@ -246,15 +248,15 @@ void status_file() {
 	TH1D* hDEtaDiMuons = new TH1D("hDEtaDiMuons","#Delta#eta for dimuon pair;#Delta#eta;Counts",100,-2.5,4);
 	TH1D* hDPhiSoloMuonDiMuons = new TH1D("hDPhiSoloMuonDiMuons","#Delta#phi for muon and di-muon pair from Bc-;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDPhiSoloMuonBarDiMuons = new TH1D("hDPhiSoloMuonBarDiMuons","#Delta#phi for muon and di-muon pair from Bc+;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
-	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,0,4.5);
-	TH1D* hDEtaSoloMuonBarDiMuons = new TH1D("hDEtaSoloMuonBarDiMuons","#Delta#eta for muon and di-muon pair from Bc+;#Delta#eta;Counts",100,0,4.5);
+	TH1D* hDEtaSoloMuonDiMuons = new TH1D("hDEtaSoloMuonDiMuons","#Delta#eta for muon and di-muon pair from Bc-;#Delta#eta;Counts",100,-2,2);
+	TH1D* hDEtaSoloMuonBarDiMuons = new TH1D("hDEtaSoloMuonBarDiMuons","#Delta#eta for muon and di-muon pair from Bc+;#Delta#eta;Counts",100,-2,2);
 	//
 	TH1D* hDPhiDiMuonsBkg = new TH1D("hDPhiDiMuonsBkg","#Delta#phi for dimuon background pair;#Delta#Phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDEtaDiMuonsBkg = new TH1D("hDEtaDiMuonsBkg","#Delta#eta for dimuon background pair;#Delta#eta;Counts",100,-2.5,4);
 	TH1D* hDPhiSoloMuonDiMuonsBkg = new TH1D("hDPhiSoloMuonDiMuonsBkg","#Delta#phi for muon and di-muon pair background;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDPhiSoloMuonBarDiMuonsBkg = new TH1D("hDPhiSoloMuonBarDiMuonsBkg","#Delta#phi for anti-muon and di-muon pair background;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
-	TH1D* hDEtaSoloMuonDiMuonsBkg = new TH1D("hDEtaSoloMuonDiMuonsBkg","#Delta#eta for muon and di-muon pair background;#Delta#eta;Counts",100,0,4.5);
-	TH1D* hDEtaSoloMuonBarDiMuonsBkg = new TH1D("hDEtaSoloMuonBarDiMuonsBkg","#Delta#eta for anti-muon and di-muon pair background;#Delta#eta;Counts",100,0,4.5);
+	TH1D* hDEtaSoloMuonDiMuonsBkg = new TH1D("hDEtaSoloMuonDiMuonsBkg","#Delta#eta for muon and di-muon pair background;#Delta#eta;Counts",100,-2,2);
+	TH1D* hDEtaSoloMuonBarDiMuonsBkg = new TH1D("hDEtaSoloMuonBarDiMuonsBkg","#Delta#eta for anti-muon and di-muon pair background;#Delta#eta;Counts",100,-2,2);
 
 	// Background mass study
 	TH1D* hInvMassFakeSoloMuon = new TH1D("hInvMassFakeSoloMuon","Invariant mass of Bc+ with fake solo muon;mass [GeV];Counts",50,0,8);
@@ -362,6 +364,7 @@ void status_file() {
 
 					// The dimuons candidates are correlated
 					// TODO: add this to part above in if-statement
+					// TODO: angle incorrect, create Jpsi first!
 					// J/psi -> μ+μ-
 					if(diMuon1BcpIndex != -1 && diMuon2BcpIndex != -1 &&
 						(*vMother1)[diMuon1BcpIndex] == (*vMother1)[diMuon2BcpIndex]) {
@@ -369,8 +372,22 @@ void status_file() {
 						DEtaDiMuons = DeltaEta((*vEta)[diMuon1BcpIndex],(*vEta)[diMuon2BcpIndex]);
 						hDPhiDiMuons->Fill(DPhiDiMuons);
 						hDEtaDiMuons->Fill(DEtaDiMuons);
-						hDPhiSoloMuonBarDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonBarIndex],DPhiDiMuons));
-						hDEtaSoloMuonBarDiMuons->Fill(DeltaEta((*vEta)[soloMuonBarIndex],DEtaDiMuons));
+						LVdiMuon1.SetPtEtaPhiM(
+							(*vPt)[diMuon1BcpIndex], 
+							(*vEta)[diMuon1BcpIndex], 
+							(*vPhi)[diMuon1BcpIndex], 
+							(*vM)[diMuon1BcpIndex]
+						);
+						LVdiMuon2.SetPtEtaPhiM(
+							(*vPt)[diMuon2BcpIndex], 
+							(*vEta)[diMuon2BcpIndex], 
+							(*vPhi)[diMuon2BcpIndex], 
+							(*vM)[diMuon2BcpIndex]
+						);
+						LVjpsi = LVdiMuon1+LVdiMuon2;
+						hInvMassJpsi->Fill(LVjpsi.M());
+						hDPhiSoloMuonBarDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonBarIndex],LVjpsi.Phi()));
+						hDEtaSoloMuonBarDiMuons->Fill(DeltaEta((*vEta)[soloMuonBarIndex],LVjpsi.Eta()));
 
 						hPtDiMuon1BcpSig->Fill((*vPt)[diMuon1BcpIndex]);
 						hEtaDiMuon1BcpSig->Fill((*vEta)[diMuon1BcpIndex]);
@@ -446,8 +463,8 @@ void status_file() {
 						DEtaDiMuons = DeltaEta((*vEta)[diMuon1BcmIndex],(*vEta)[diMuon2BcmIndex]);
 						hDPhiDiMuons->Fill(DPhiDiMuons);
 						hDEtaDiMuons->Fill(DEtaDiMuons);
-						hDPhiSoloMuonDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonIndex],DPhiDiMuons));
-						hDEtaSoloMuonDiMuons->Fill(DeltaEta((*vEta)[soloMuonIndex],DEtaDiMuons));
+						// hDPhiSoloMuonDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonIndex],DPhiDiMuons));
+						// hDEtaSoloMuonDiMuons->Fill(DeltaEta((*vEta)[soloMuonIndex],DEtaDiMuons));
 
 						hPtDiMuon1BcmSig->Fill((*vPt)[diMuon1BcmIndex]);
 						if (VERBOSE) { std::cout<<"pT dimuon = "<<(*vPt)[diMuon1BcmIndex]<<std::endl; }
@@ -526,8 +543,21 @@ void status_file() {
 					hDPhiDiMuonsBkg->Fill(DPhiDiMuons);
 					hDEtaDiMuonsBkg->Fill(DEtaDiMuons);
 
-					hDPhiSoloMuonDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBkgIndex],DPhiDiMuonsBkg));
-					hDEtaSoloMuonDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBkgIndex],DEtaDiMuonsBkg));
+					LVdiMuon1.SetPtEtaPhiM(
+							(*vPt)[diMuon1BkgIndex], 
+							(*vEta)[diMuon1BkgIndex], 
+							(*vPhi)[diMuon1BkgIndex], 
+							(*vM)[diMuon1BkgIndex]
+						);
+						LVdiMuon2.SetPtEtaPhiM(
+							(*vPt)[diMuon2BkgIndex], 
+							(*vEta)[diMuon2BkgIndex], 
+							(*vPhi)[diMuon2BkgIndex], 
+							(*vM)[diMuon2BkgIndex]
+						);
+						LVjpsi = LVdiMuon1+LVdiMuon2;
+						hDPhiSoloMuonDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBkgIndex],LVjpsi.Phi()));
+						hDEtaSoloMuonDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBkgIndex],LVjpsi.Eta()));
 				}
 
 				if(soloMuonBarBkgIndex != -1 && diMuon1BkgIndex != -1 && diMuon2BkgIndex != -1) {
@@ -536,8 +566,21 @@ void status_file() {
 					hDPhiDiMuonsBkg->Fill(DPhiDiMuons);
 					hDEtaDiMuonsBkg->Fill(DEtaDiMuons);
 
-					hDPhiSoloMuonBarDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBarBkgIndex],DPhiDiMuonsBkg));
-					hDEtaSoloMuonBarDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],DEtaDiMuonsBkg));
+					LVdiMuon1.SetPtEtaPhiM(
+							(*vPt)[diMuon1BkgIndex], 
+							(*vEta)[diMuon1BkgIndex], 
+							(*vPhi)[diMuon1BkgIndex], 
+							(*vM)[diMuon1BkgIndex]
+						);
+						LVdiMuon2.SetPtEtaPhiM(
+							(*vPt)[diMuon2BkgIndex], 
+							(*vEta)[diMuon2BkgIndex], 
+							(*vPhi)[diMuon2BkgIndex], 
+							(*vM)[diMuon2BkgIndex]
+						);
+						LVjpsi = LVdiMuon1+LVdiMuon2;
+						hDPhiSoloMuonDiMuonsBkg->Fill(DeltaPhi((*vPhi)[soloMuonBarBkgIndex],LVjpsi.Phi()));
+						hDEtaSoloMuonDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],LVjpsi.Eta()));
 				}
 
 				// Study backgrounds : reconstruction with fake solo muon (including and excluding neutrinos)
