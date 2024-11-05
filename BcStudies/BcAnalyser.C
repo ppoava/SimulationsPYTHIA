@@ -101,11 +101,11 @@ void status_file() {
 	
 	// Define the TChain
 	TChain *ch1 = new TChain("tree");
-	TFile *output = new TFile("analysed_output.root","RECREATE");
+	TFile *output = new TFile("analysed_output_test.root","RECREATE");
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output.root");
+	ch1->Add("output_1e9_31_OKT_2024.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
@@ -255,6 +255,15 @@ void status_file() {
 	TH1D* hDPhiSoloMuonBarDiMuonsBkg = new TH1D("hDPhiSoloMuonBarDiMuonsBkg","#Delta#phi for anti-muon and di-muon pair background;#Delta#phi (rad);Counts",100,-PI/2,3*PI/2);
 	TH1D* hDEtaSoloMuonDiMuonsBkg = new TH1D("hDEtaSoloMuonDiMuonsBkg","#Delta#eta for muon and di-muon pair background;#Delta#eta;Counts",100,0,4.5);
 	TH1D* hDEtaSoloMuonBarDiMuonsBkg = new TH1D("hDEtaSoloMuonBarDiMuonsBkg","#Delta#eta for anti-muon and di-muon pair background;#Delta#eta;Counts",100,0,4.5);
+
+	// Background mass study
+	TH1D* hInvMassFakeSoloMuon = new TH1D("hInvMassFakeSoloMuon","Invariant mass of Bc+ with fake solo muon;mass [GeV];Counts",50,0,8);
+	TH1D* hInvMassWithoutNeutrinoFakeSoloMuon = new TH1D("hInvMassWithoutNeutrinoFakeSoloMuon","Invariant mass of Bc+ with fake solo muon w/o neutrino;mass [GeV];Counts",50,0,8);
+	TH1D* hDMassFakeSoloMuon = new TH1D("hDMassFakeSoloMuon","#Delta mass effect with fake solo muon and excluding neutrino;mass [GeV];Counts",50,0,6);
+
+	TH1D* hInvMassFakeJpsi = new TH1D("hInvMassFakeJpsi","Invariant mass of Bc+ with fake Jpsi;mass [GeV];Counts",50,0,8);
+	TH1D* hInvMassWithoutNeutrinoFakeJpsi = new TH1D("hInvMassWithoutNeutrinoFakeJpsi","Invariant mass of Bc+ with fake Jpsi w/o neutrino;mass [GeV];Counts",50,0,8);
+	TH1D* hDMassFakeJpsi = new TH1D("hDMassFakeJpsi","#Delta mass effect with fake Jpsi and excluding neutrino;mass [GeV];Counts",50,0,6);
 
 	// 2-dimensional histograms
 	// TH2D* hTrPtEta = new TH2D("hPtEta",Form("pT and pseudorapidity trigger pT for trigger %s;p_{T};#eta;Counts",title),100,0,50,100,-4,4); 
@@ -531,9 +540,34 @@ void status_file() {
 					hDEtaSoloMuonBarDiMuonsBkg->Fill(DeltaEta((*vEta)[soloMuonBarBkgIndex],DEtaDiMuonsBkg));
 				}
 
-				// Study backgrounds : reconstruction with fake J/psi (including and excluding neutrinos)
-				if(soloMuonBarIndex != -1 && diMuon1BkgIndex != -1 && diMuon2BkgIndex != -1) {// fake J/psi, real muon
+				// Study backgrounds : reconstruction with fake solo muon (including and excluding neutrinos)
+				if(neutrinoIndex != -1 && soloMuonBarBkgIndex != -1 && diMuon1BcpIndex != -1 && diMuon2BcpIndex != -1) {// fake J/psi, real muon
+					if(VERBOSE) {std::cout<<"Found fake solo muon"<<std::endl;}
+					Double_t invariantMass = InvariantMass(neutrinoIndex,soloMuonBarBkgIndex, 
+															diMuon1BcpIndex,diMuon2BcpIndex,
+															vPt,vEta,vPhi,vM);
+					hInvMassFakeSoloMuon->Fill(invariantMass);
+					Double_t invariantMassWithoutNeutrino = InvariantMassWithoutNeutrino(
+															soloMuonBarBkgIndex, 
+															diMuon1BcpIndex,diMuon2BcpIndex,
+															vPt,vEta,vPhi,vM);
+					hInvMassWithoutNeutrinoFakeSoloMuon->Fill(invariantMassWithoutNeutrino);
+					hDMassFakeSoloMuon->Fill(invariantMass-invariantMassWithoutNeutrino);
+				}
 
+				// Study backgrounds : reconstruction with fake J/psi (including and excluding neutrinos)
+				if(neutrinoIndex != -1 && soloMuonBarIndex != -1 && diMuon1BkgIndex != -1 && diMuon2BkgIndex != -1) {// fake J/psi, real muon
+					if(VERBOSE) {std::cout<<"Found fake Jpsi"<<std::endl;}
+					Double_t invariantMass = InvariantMass(neutrinoIndex,soloMuonBarIndex, 
+															diMuon1BkgIndex,diMuon2BkgIndex,
+															vPt,vEta,vPhi,vM);
+					hInvMassFakeJpsi->Fill(invariantMass);
+					Double_t invariantMassWithoutNeutrino = InvariantMassWithoutNeutrino(
+															soloMuonBarIndex, 
+															diMuon1BkgIndex,diMuon2BkgIndex,
+															vPt,vEta,vPhi,vM);
+					hInvMassWithoutNeutrinoFakeJpsi->Fill(invariantMassWithoutNeutrino);
+					hDMassFakeJpsi->Fill(invariantMass-invariantMassWithoutNeutrino);
 				}
 
 			} // pT > 1 GeV cut
