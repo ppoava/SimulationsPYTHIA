@@ -386,6 +386,7 @@ void status_file() {
 						);
 						LVjpsi = LVdiMuon1+LVdiMuon2;
 						hInvMassJpsi->Fill(LVjpsi.M());
+						hEtaJpsi->Fill(LVjps)
 						hDPhiSoloMuonBarDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonBarIndex],LVjpsi.Phi()));
 						hDEtaSoloMuonBarDiMuons->Fill(DeltaEta((*vEta)[soloMuonBarIndex],LVjpsi.Eta()));
 
