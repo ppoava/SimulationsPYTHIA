@@ -38,6 +38,10 @@ void drawCanvas() {
     TH1D* hEtaNeutrinoBkg = (TH1D*)rootFile->Get("hEtaNeutrinoBkg");
     TH1D* hPhiNeutrinoSig = (TH1D*)rootFile->Get("hPhiNeutrinoSig");
     TH1D* hPhiNeutrinoBkg = (TH1D*)rootFile->Get("hPhiNeutrinoBkg");
+    TH1D* hEtaSoloMuonSig = (TH1D*)rootFile->Get("hEtaSoloMuonSig");
+    TH1D* hEtaSoloMuonBkg = (TH1D*)rootFile->Get("hEtaSoloMuonBkg");
+    TH1D* hPhiSoloMuonSig = (TH1D*)rootFile->Get("hPhiSoloMuonSig");
+    TH1D* hPhiSoloMuonBkg = (TH1D*)rootFile->Get("hPhiSoloMuonBkg");
     TH1D* hPhiNeutrinoBarBkg = (TH1D*)rootFile->Get("hPhiNeutrinoBarBkg");
     TH1D* hDPhiDiMuons = (TH1D*)rootFile->Get("hDPhiDiMuons");
     TH1D* hDPhiDiMuonsBkg = (TH1D*)rootFile->Get("hDPhiDiMuonsBkg");
@@ -60,6 +64,10 @@ void drawCanvas() {
     hEtaNeutrinoBkg->Scale(1/hEtaNeutrinoBkg->Integral());
     hPhiNeutrinoSig->Scale(1/hPhiNeutrinoSig->Integral());
     hPhiNeutrinoBkg->Scale(1/hPhiNeutrinoBkg->Integral());
+    hEtaSoloMuonSig->Scale(1/hEtaSoloMuonSig->Integral());
+    hEtaSoloMuonBkg->Scale(1/hEtaSoloMuonBkg->Integral());
+    hPhiSoloMuonSig->Scale(1/hPhiSoloMuonSig->Integral());
+    hPhiSoloMuonBkg->Scale(1/hPhiSoloMuonBkg->Integral());
     hPhiNeutrinoBarBkg->Scale(1/hPhiNeutrinoBarBkg->Integral());
     hDPhiDiMuons->Scale(1/hDPhiDiMuons->Integral());
     hDPhiDiMuonsBkg->Scale(1/hDPhiDiMuonsBkg->Integral());
@@ -134,6 +142,7 @@ void drawCanvas() {
     lPtNeutrino->AddEntry(hPtNeutrinoBkg, "background", "l");
 
     cPtNeutrino->cd();
+    // gPad->SetLogy();
     hPtNeutrinoBkg->Draw("hist E");
     hPtNeutrinoSig->Draw("same hist E");
     lPtNeutrino->Draw();
@@ -164,6 +173,7 @@ void drawCanvas() {
     lPtSoloMuon->AddEntry(hPtSoloMuonBkg, "background", "l");
 
     cPtSoloMuon->cd();
+    gPad->SetLogy();
     hPtSoloMuonBkg->Draw("hist E");
     hPtSoloMuonSig->Draw("same hist E");
     lPtSoloMuon->Draw();
@@ -227,6 +237,66 @@ void drawCanvas() {
     hPhiNeutrinoSig->Draw("hist E");
     hPhiNeutrinoBkg->Draw("same hist E");
     lPhiNeutrino->Draw();
+
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+
+    TCanvas* cEtaSoloMuon = new TCanvas("cEtaSoloMuon", "Compare signal and background solo muons", 1200, 1000);
+    setCanvasMargins(cEtaSoloMuon, 0.20, 0.1, 0.1, 0.05);
+    hEtaSoloMuonSig->SetLineColor(kRed);
+    hEtaSoloMuonBkg->SetLineColor(kBlack);
+    hEtaSoloMuonSig->GetYaxis()->SetTitle("self-normalised counts");
+    hEtaSoloMuonSig->GetXaxis()->SetTitle("eta");
+
+    TLegend* lEtaSoloMuon = new TLegend(0.30, 0.6, 0.50, 0.75);
+    lEtaSoloMuon->SetTextSize(0.05);
+    lEtaSoloMuon->SetBorderSize(0);
+    lEtaSoloMuon->SetMargin(0.5);
+    lEtaSoloMuon->AddEntry(hEtaSoloMuonSig, "signal", "l");
+    lEtaSoloMuon->AddEntry(hEtaSoloMuonBkg, "background", "l");
+
+    cEtaSoloMuon->cd();
+    hEtaSoloMuonSig->Draw("hist E");
+    hEtaSoloMuonBkg->Draw("same hist E");
+    lEtaSoloMuon->Draw();
+
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+    // -------------------------------------------------------------------- //
+
+    TCanvas* cPhiSoloMuon = new TCanvas("cPhiSoloMuon", "Compare signal and background solo muons", 1200, 1000);
+    setCanvasMargins(cPhiSoloMuon, 0.20, 0.1, 0.1, 0.05);
+    hPhiSoloMuonSig->SetLineColor(kRed);
+    hPhiSoloMuonBkg->SetLineColor(kBlack);
+    hPhiSoloMuonSig->GetYaxis()->SetTitle("self-normalised counts");
+    hPhiSoloMuonSig->GetXaxis()->SetTitle("phi");
+
+    TLegend* lPhiSoloMuon = new TLegend(0.30, 0.6, 0.50, 0.75);
+    lPhiSoloMuon->SetTextSize(0.05);
+    lPhiSoloMuon->SetBorderSize(0);
+    lPhiSoloMuon->SetMargin(0.5);
+    lPhiSoloMuon->AddEntry(hPhiSoloMuonSig, "signal", "l");
+    lPhiSoloMuon->AddEntry(hPhiSoloMuonBkg, "background", "l");
+
+    cPhiSoloMuon->cd();
+    hPhiSoloMuonSig->Draw("hist E");
+    hPhiSoloMuonBkg->Draw("same hist E");
+    lPhiSoloMuon->Draw();
 
     // -------------------------------------------------------------------- //
     // -------------------------------------------------------------------- //
