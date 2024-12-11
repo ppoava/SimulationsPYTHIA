@@ -1,14 +1,20 @@
-#include <iostream>
-#include <vector>
-#include "SimulationDataFormat/MCTrack.h"
-#include "Steer/Steer.h"
-#include "MCUtils.h"
-#include "CommonDataFormat/MCTrack.h"
+// #include <iostream>
+// #include <vector>
+// #include "TFile.h"
+// #include "TTree.h"
+// #include "SimulationDataFormat/MCTrack.h"
+// #include "Steer/Steer.h"
+// #include "Steer/Steer.h"
+// #include "MCUtils.h"
+// #include "TMCProcess.h"
+// #include "CommonDataFormat/MCTrack.h"
 
-using o2::steer;
-using o2;
+using namespace o2;
+// using namespace o2::steer;
+
 
 int readKinematics() {
+  /*
   // init the reader from the transport kinematics file (assuming here prefix o2sim)
   o2::steer::MCKinematicsReader reader("o2sim", o2::steer::MCKinematicsReader::Mode::kMCKine);
 
@@ -29,4 +35,33 @@ int readKinematics() {
       auto primary = o2::mcutil::MCTrackNavigator::getFirstPrimary(t, tracks);
       }
   }
+  return 0;
+  */
+
+ // Jpsi = 443
+ // Bc+ = 541
+
+  TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
+  TFile inputKine("o2sim_Kine.root","READ");
+    auto tree = (TTree*)inputKine.Get("o2sim");
+    std::vector<o2::MCTrack>* tracks{};
+    tree->SetBranchAddress("MCTrack", &tracks);
+    for (int ev = 0; ev < tree->GetEntries(); ++ev) {
+        tree->GetEntry(ev);
+        for (auto& track : *tracks) {
+          hID->Fill(track.GetPdgCode());
+          Int_t particlePdgCode = track.GetPdgCode();
+          Int_t motherTrackId = track.getMotherTrackId();
+          const o2::MCTrack& motherTrack = (*tracks)[motherTrackId];
+          Int_t motherPdgCode = motherTrack.GetPdgCode();
+          if(particlePdgCode != 443) { continue; }
+          std::cout<<"my mom = "<<motherPdgCode<<std::endl;
+          std::cout<<"pdg code = "<<particlePdgCode<<std::endl;
+        }
+    }
+    TFile outputFile("output.root", "RECREATE");
+    hID->Write();
+
+
+    return 0;
 }
