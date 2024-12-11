@@ -42,26 +42,40 @@ int readKinematics() {
  // Bc+ = 541
 
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
-  TFile inputKine("o2sim_Kine.root","READ");
+  TFile inputKine("1e3_o2sim_Kine.root","READ");
     auto tree = (TTree*)inputKine.Get("o2sim");
     std::vector<o2::MCTrack>* tracks{};
     tree->SetBranchAddress("MCTrack", &tracks);
     for (int ev = 0; ev < tree->GetEntries(); ++ev) {
+
+
         tree->GetEntry(ev);
+
+
         for (auto& track : *tracks) {
+
+
           hID->Fill(track.GetPdgCode());
           Int_t particlePdgCode = track.GetPdgCode();
           Int_t motherTrackId = track.getMotherTrackId();
           const o2::MCTrack& motherTrack = (*tracks)[motherTrackId];
           Int_t motherPdgCode = motherTrack.GetPdgCode();
-          if(particlePdgCode != 443) { continue; }
-          std::cout<<"my mom = "<<motherPdgCode<<std::endl;
-          std::cout<<"pdg code = "<<particlePdgCode<<std::endl;
+
+          if (particlePdgCode == 443) { // Jpsi
+            std::cout<<"me = "<<particlePdgCode<<std::endl;
+            std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
+          }
+
+          if (particlePdgCode == 13) { // mu-
+            std::cout<<"me = "<<particlePdgCode<<std::endl;
+            std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
+          }
+    
+
         }
     }
     TFile outputFile("output.root", "RECREATE");
     hID->Write();
-
 
     return 0;
 }
