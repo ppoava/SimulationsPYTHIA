@@ -42,7 +42,9 @@ int readKinematics() {
  // Bc+ = 541
 
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
-  TFile inputKine("1e3_o2sim_Kine.root","READ");
+  TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,0,5);
+  Int_t nJpsi = 0;
+  TFile inputKine("JpsiStudies/o2sim_Kine.root","READ");
     auto tree = (TTree*)inputKine.Get("o2sim");
     std::vector<o2::MCTrack>* tracks{};
     tree->SetBranchAddress("MCTrack", &tracks);
@@ -60,22 +62,42 @@ int readKinematics() {
           Int_t motherTrackId = track.getMotherTrackId();
           const o2::MCTrack& motherTrack = (*tracks)[motherTrackId];
           Int_t motherPdgCode = motherTrack.GetPdgCode();
+          
+
+          // std::cout<<"pdg code = "<<particlePdgCode<<std::endl;
 
           if (particlePdgCode == 443) { // Jpsi
+            nJpsi++;
             std::cout<<"me = "<<particlePdgCode<<std::endl;
             std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
           }
 
           if (particlePdgCode == 13) { // mu-
+            TLorentzVector trigger4P;
+            track.Get4Momentum(trigger4P);
             std::cout<<"me = "<<particlePdgCode<<std::endl;
             std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
+            for (auto& track : *tracks) { // couple with mu+ now
+              Int_t associatePdgCode = track.GetPdgCode();
+              if (associatePdgCode == -13) { // mu+ found 
+                TLorentzVector associate4P;
+                track.Get4Momentum(associate4P);
+                TLorentzVector dimuon4P = trigger4P+associate4P;
+                Double_t dimuonM = dimuon4P.M();
+                std::cout<<"Di-muon mass = "<<dimuonM<<std::endl;
+                hDiMuonMass->Fill(dimuonM);
+              }
+
+            }
           }
     
 
         }
     }
-    TFile outputFile("output.root", "RECREATE");
+    std::cout<<"Number of jpsi found = "<<nJpsi<<std::endl;
+    TFile outputFile("JpsiStudies/output.root", "RECREATE");
     hID->Write();
+    hDiMuonMass->Write();
 
     return 0;
 }
