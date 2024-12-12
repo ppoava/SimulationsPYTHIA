@@ -23,5 +23,5 @@
 
 set -x
 
-NEV=10
+NEV=100
 o2-sim -n ${NEV} -g boxgen --configKeyValues 'BoxGun.pdg=3122;BoxGun.number=1;SimUserDecay.pdglist=3122 111;DecayerPythia8.config[1]=decay_lambda_neutron_dalitz.cfg;DecayerPythia8.verbose=true'
