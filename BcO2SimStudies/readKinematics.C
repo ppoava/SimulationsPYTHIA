@@ -12,6 +12,10 @@
 using namespace o2;
 // using namespace o2::steer;
 
+bool isFinalState(o2::MCTrack* track) {
+    // A final-state particle will have no daughters and no mother
+    return (track->getFirstDaughterTrackId() == -1 && track->getLastDaughterTrackId() == -1);
+}
 
 int readKinematics() {
   /*
@@ -42,20 +46,31 @@ int readKinematics() {
  // Bc+ = 541
 
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
-  TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,0,5);
+  TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,3.095,3.099);
   Int_t nJpsi = 0;
+  Int_t nMuon = 0;
+  Int_t nAntiMuon = 0;
+
+
   TFile inputKine("JpsiStudies/o2sim_Kine.root","READ");
     auto tree = (TTree*)inputKine.Get("o2sim");
     std::vector<o2::MCTrack>* tracks{};
     tree->SetBranchAddress("MCTrack", &tracks);
+
+
+    // TO DO 
+    // ADD RANDOM COMBINATIONS OF MUONS (OR SEMI-RANDOM) OR AT LEAST MOTIVATED BY EXPERIMENT 
+    // (e.g. similar origin vertex, etc.)
+
     for (int ev = 0; ev < tree->GetEntries(); ++ev) {
 
 
         tree->GetEntry(ev);
-
+        std::cout<<"NEXT EVENT"<<std::endl<<std::endl;
 
         for (auto& track : *tracks) {
 
+          // if (!isFinalState(&track)) { continue; }
 
           hID->Fill(track.GetPdgCode());
           Int_t particlePdgCode = track.GetPdgCode();
@@ -63,7 +78,6 @@ int readKinematics() {
           const o2::MCTrack& motherTrack = (*tracks)[motherTrackId];
           Int_t motherPdgCode = motherTrack.GetPdgCode();
           
-
           // std::cout<<"pdg code = "<<particlePdgCode<<std::endl;
 
           if (particlePdgCode == 443) { // Jpsi
@@ -73,13 +87,19 @@ int readKinematics() {
           }
 
           if (particlePdgCode == 13) { // mu-
+            nMuon++;
             TLorentzVector trigger4P;
             track.Get4Momentum(trigger4P);
+            Int_t triggerMother = track.getMotherTrackId();
+            std::cout<<"trigger mother = "<<triggerMother<<std::endl;
             std::cout<<"me = "<<particlePdgCode<<std::endl;
             std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
             for (auto& track : *tracks) { // couple with mu+ now
               Int_t associatePdgCode = track.GetPdgCode();
-              if (associatePdgCode == -13) { // mu+ found 
+              Int_t associateMother = track.getMotherTrackId();
+              // std::cout<<"associateMother = "<<associateMother<<std::endl;
+              if (associatePdgCode == -13 && associateMother == triggerMother) { // mu+ found 
+                nAntiMuon++;
                 TLorentzVector associate4P;
                 track.Get4Momentum(associate4P);
                 TLorentzVector dimuon4P = trigger4P+associate4P;
@@ -87,7 +107,6 @@ int readKinematics() {
                 std::cout<<"Di-muon mass = "<<dimuonM<<std::endl;
                 hDiMuonMass->Fill(dimuonM);
               }
-
             }
           }
     
@@ -95,6 +114,8 @@ int readKinematics() {
         }
     }
     std::cout<<"Number of jpsi found = "<<nJpsi<<std::endl;
+    std::cout<<"Number of muons found = "<<nMuon<<std::endl;
+    std::cout<<"Number of anti-muons found = "<<nAntiMuon<<std::endl;
     TFile outputFile("JpsiStudies/output.root", "RECREATE");
     hID->Write();
     hDiMuonMass->Write();
