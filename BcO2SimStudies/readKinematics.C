@@ -47,16 +47,24 @@ int readKinematics() {
 
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
   TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,3.095,3.099);
+  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,3.095,3.099);
+  Int_t trackId = 0;
   Int_t nJpsi = 0;
   Int_t nMuon = 0;
   Int_t nAntiMuon = 0;
+  Int_t candMuonP,candMuonM;
   Int_t particlePdgCode,motherTrackId,motherPdgCode,triggerMotherTrackId,associatePdgCode,associateMotherTrackId,associateMotherPdgCode;
   Int_t firstDaughterTrackId,firstDaughterPdgCode;
   Int_t lastDaughterTrackId,lastDaughterPdgCode;
   Double_t pT,eta,triggerVx,triggerVy,triggerVz,associateVx,associateVy,associateVz;
+  Double_t candMuonPVx,candMuonMVx;
+  TLorentzVector candMuonP4P,candMuonM4P;
 
 
-  TFile inputKine("Lambda0ForcedDecay/o2sim_Kine.root","READ");
+  Double_t VxCut = 0.1;
+
+
+  TFile inputKine("JpsiStudies/1e3_o2sim_Kine.root","READ");
   auto tree = (TTree*)inputKine.Get("o2sim");
   std::vector<o2::MCTrack>* tracks{};
   tree->SetBranchAddress("MCTrack", &tracks);
@@ -71,10 +79,15 @@ int readKinematics() {
 
       tree->GetEntry(ev);
       // std::cout<<"NEXT EVENT"<<std::endl<<std::endl;
+      candMuonP = 0;
+      candMuonM = 0;
+      candMuonPVx = 999999;
+      candMuonMVx = -999999;
 
 
       for (auto& track : *tracks) {
 
+        trackId++;
 
         // if (!isFinalState(&track)) { continue; }
 
@@ -105,8 +118,8 @@ int readKinematics() {
 
         // for testing only
         if (particlePdgCode == 3122) { // lambda
-          std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
-          std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
+          // std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
+          // std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
           // std::cout<<"me = "<<particlePdgCode<<std::endl;
           // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
         }
@@ -172,8 +185,28 @@ int readKinematics() {
               hDiMuonMass->Fill(dimuonM);
             }
           }
-        } // end of di-muon coupling
+        } // end of TRUE di-muon coupling
 
+
+        // now try to match muons using only the vertex information
+        if (particlePdgCode == 13) { // mu+ identified in detector
+          candMuonPVx = track.Vx();
+          track.Get4Momentum(candMuonP4P);
+          // candMuonVy = track.Vy();
+          // candMuonVz = track.Vz();
+        }
+
+        if (particlePdgCode == -13) { // mu- identified in same event
+          candMuonMVx = track.Vx();
+          track.Get4Momentum(candMuonM4P);
+        }
+
+        if (abs(candMuonPVx - candMuonMVx) < VxCut) {
+          TLorentzVector dimuon4P = candMuonP4P + candMuonM4P;
+          Double_t dimuonM = dimuon4P.M();
+          // std::cout<<"candidate matching mass = "<<dimuonM<<std::endl<<std::endl;
+          hDiMuonCandMass->Fill(dimuonM);
+        }
 
       } // end of tracks
 
@@ -187,6 +220,7 @@ int readKinematics() {
   TFile outputFile("JpsiStudies/output.root", "RECREATE");
   hID->Write();
   hDiMuonMass->Write();
+  hDiMuonCandMass->Write();
 
 
   return 0;
