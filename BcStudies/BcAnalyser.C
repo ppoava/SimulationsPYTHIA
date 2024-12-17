@@ -101,11 +101,11 @@ void status_file() {
 	
 	// Define the TChain
 	TChain *ch1 = new TChain("tree");
-	TFile *output = new TFile("analysed_output_31_OKT_2024.root","RECREATE");
+	TFile *output = new TFile("analysed_output.root","RECREATE");
 	
 	// OPTION 1: SINGLE FILE
     // INPUT
-	ch1->Add("output_1e9_31_OKT_2024.root");
+	ch1->Add("output.root");
 	// ch1->Add("output.root");
 	
 	// OPTION 2: BATCH FILE STRUCTURE
@@ -386,7 +386,7 @@ void status_file() {
 						);
 						LVjpsi = LVdiMuon1+LVdiMuon2;
 						hInvMassJpsi->Fill(LVjpsi.M());
-						hEtaJpsi->Fill(LVjps)
+						// hEtaJpsi->Fill(LVjpsi.Eta());
 						hDPhiSoloMuonBarDiMuons->Fill(DeltaPhi((*vPhi)[soloMuonBarIndex],LVjpsi.Phi()));
 						hDEtaSoloMuonBarDiMuons->Fill(DeltaEta((*vEta)[soloMuonBarIndex],LVjpsi.Eta()));
 
