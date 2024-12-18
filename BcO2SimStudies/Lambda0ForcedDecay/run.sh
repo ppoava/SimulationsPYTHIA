@@ -24,9 +24,7 @@
 set -x
 
 NEV=10
-# o2-sim -n ${NEV} -g boxgen --configKeyValues \
-# "BoxGun.pdg=3122;BoxGun.number=1;SimUserDecay.pdglist=3122 111;DecayerPythia8.config[1]=decay_lambda_neutron_dalitz.cfg;DecayerPythia8.verbose=true"
+NODES=10
 
-# testing jpsi case!!
-o2-sim -n ${NEV} -g boxgen --configKeyValues \
-"BoxGun.pdg=443;BoxGun.number=1;SimUserDecay.pdglist=443;DecayerPythia8.config[1]=decay_jpsi.cfg;DecayerPythia8.verbose=true"
+o2-sim -j ${NODES} -n ${NEV} -g boxgen --configKeyValues \
+"BoxGun.pdg=3122;BoxGun.number=1;SimUserDecay.pdglist=3122;DecayerPythia8.config[1]=decay_lambda_neutron_dalitz.cfg;DecayerPythia8.verbose=true"
