@@ -42,12 +42,16 @@ int readKinematics() {
   return 0;
   */
 
+ // TODO: do this on hyperloop
+
  // Jpsi = 443
  // Bc+ = 541
 
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
   TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,3.095,3.099);
-  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,3.095,3.099);
+  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,0,10);
+  TH1F *hDiMuonMatchedMass = new TH1F("hDiMuonMatchedMass","Di-muon matched < 10.0 mass [GeV]",100,0,10);
+  TH1F *hDiMuonVxDiff = new TH1F("hDiMuonVxDiff","Di-muon vx difference of pairs",100,-11,11);
   Int_t trackId = 0;
   Int_t nJpsi = 0;
   Int_t nMuon = 0;
@@ -61,7 +65,7 @@ int readKinematics() {
   TLorentzVector candMuonP4P,candMuonM4P;
 
 
-  Double_t VxCut = 0.1;
+  Double_t VxCut = 0.001; // cut on di-muon production vertex
 
 
   TFile inputKine("JpsiStudies/1e3_o2sim_Kine.root","READ");
@@ -117,12 +121,35 @@ int readKinematics() {
 
 
         // for testing only
-        if (particlePdgCode == 3122) { // lambda
-          // std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
-          // std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
+        /*
+        if (particlePdgCode == 3322) { // xi0
+          std::cout<<"I am a "<<particlePdgCode<<std::endl;
+          std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
+          std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
           // std::cout<<"me = "<<particlePdgCode<<std::endl;
           // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
         }
+        */
+        
+
+        /*
+        if (particlePdgCode == 3122) { // lambda
+          std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
+          std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
+          // std::cout<<"me = "<<particlePdgCode<<std::endl;
+          // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
+        }
+        */
+
+
+        /*
+        if (particlePdgCode == 111) { // pi0
+          std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
+          std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
+          // std::cout<<"me = "<<particlePdgCode<<std::endl;
+          // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
+        }
+        */
 
 
         if (particlePdgCode == 541) { // bc+
@@ -167,28 +194,47 @@ int readKinematics() {
             const o2::MCTrack& associateMotherTrack = (*tracks)[associateMotherTrackId];
             associateMotherPdgCode = motherTrack.GetPdgCode();
             // std::cout<<"associateMother = "<<associateMother<<std::endl;
-            if (associatePdgCode == -13 && associateMotherTrackId == motherTrackId) { // mu+ and same mother as mu-
-              nAntiMuon++;
+            if (associatePdgCode == -13) { // mu+
               TLorentzVector associate4P;
               associateVx = track.Vx();
               associateVy = track.Vy();
               associateVz = track.Vz();
-              std::cout<<"me = "<<associatePdgCode<<std::endl;
-              std::cout<<"my mom = "<<associateMotherPdgCode<<std::endl;
-              std::cout<<"and my trigger mom = "<<motherPdgCode<<std::endl;
-              std::cout<<"my trigger production coordinates = "<<"("<<triggerVx<<","<<triggerVy<<","<<triggerVz<<")"<<std::endl<<std::endl;
-              std::cout<<"my associate production coordinates = "<<"("<<associateVx<<","<<associateVy<<","<<associateVz<<")"<<std::endl<<std::endl;
-              track.Get4Momentum(associate4P);
-              TLorentzVector dimuon4P = trigger4P+associate4P;
-              Double_t dimuonM = dimuon4P.M();
-              std::cout<<"Di-muon mass = "<<dimuonM<<std::endl;
-              hDiMuonMass->Fill(dimuonM);
+              if (associateMotherTrackId == motherTrackId) { // true dimuon pair found
+                nAntiMuon++;
+                std::cout<<"me = "<<associatePdgCode<<std::endl;
+                std::cout<<"my mom = "<<associateMotherPdgCode<<std::endl;
+                std::cout<<"and my trigger mom = "<<motherPdgCode<<std::endl;
+                std::cout<<"my trigger production coordinates = "<<"("<<triggerVx<<","<<triggerVy<<","<<triggerVz<<")"<<std::endl<<std::endl;
+                std::cout<<"my associate production coordinates = "<<"("<<associateVx<<","<<associateVy<<","<<associateVz<<")"<<std::endl<<std::endl;
+                track.Get4Momentum(associate4P);
+                TLorentzVector dimuon4P = trigger4P+associate4P;
+                Double_t dimuonM = dimuon4P.M();
+                std::cout<<"Di-muon mass = "<<dimuonM<<std::endl;
+                hDiMuonMass->Fill(dimuonM);
+              }
+              if (abs(triggerVx - associateVx) < VxCut) {
+                track.Get4Momentum(associate4P);
+                TLorentzVector dimuon4P = trigger4P+associate4P;
+                Double_t dimuonM = dimuon4P.M();
+                // std::cout<<"candidate matching mass = "<<dimuonM<<std::endl<<std::endl;
+                hDiMuonCandMass->Fill(dimuonM);
+              }
+              if (abs(triggerVx - associateVx) < 10.0) {
+                track.Get4Momentum(associate4P);
+                TLorentzVector dimuon4P = trigger4P+associate4P;
+                Double_t dimuonM = dimuon4P.M();
+                // std::cout<<"candidate fake mass = "<<dimuonM<<std::endl<<std::endl;
+                hDiMuonMatchedMass->Fill(dimuonM);
+                hDiMuonVxDiff->Fill(triggerVx-associateVx);
+              }
             }
           }
         } // end of TRUE di-muon coupling
 
 
+        /*
         // now try to match muons using only the vertex information
+        // TODO: improve method: it wont find every pair in the event
         if (particlePdgCode == 13) { // mu+ identified in detector
           candMuonPVx = track.Vx();
           track.Get4Momentum(candMuonP4P);
@@ -205,8 +251,17 @@ int readKinematics() {
           TLorentzVector dimuon4P = candMuonP4P + candMuonM4P;
           Double_t dimuonM = dimuon4P.M();
           // std::cout<<"candidate matching mass = "<<dimuonM<<std::endl<<std::endl;
-          hDiMuonCandMass->Fill(dimuonM);
+          // hDiMuonCandMass->Fill(dimuonM);
         }
+        if (abs(candMuonPVx - candMuonMVx) < 10.0) {
+          TLorentzVector dimuon4P = candMuonP4P + candMuonM4P;
+          Double_t dimuonM = dimuon4P.M();
+          // std::cout<<"candidate fake mass = "<<dimuonM<<std::endl<<std::endl;
+          // hDiMuonMatchedMass->Fill(dimuonM);
+          // hDiMuonVxDiff->Fill(candMuonPVx-candMuonMVx);
+        }
+        */
+
 
       } // end of tracks
 
@@ -221,6 +276,8 @@ int readKinematics() {
   hID->Write();
   hDiMuonMass->Write();
   hDiMuonCandMass->Write();
+  hDiMuonMatchedMass->Write();
+  hDiMuonVxDiff->Write();
 
 
   return 0;
