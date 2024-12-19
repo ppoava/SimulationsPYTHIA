@@ -18,54 +18,41 @@ bool isFinalState(o2::MCTrack* track) {
 }
 
 int readKinematics() {
-  /*
-  // init the reader from the transport kinematics file (assuming here prefix o2sim)
-  o2::steer::MCKinematicsReader reader("o2sim", o2::steer::MCKinematicsReader::Mode::kMCKine);
 
-  // loop over all events in the file
-  for (int event = 0; event < reader.getNEvents(0); ++event) {
-    // get all Monte Carlo tracks for this event; not that this is the short version of
-    // std::vector<MCTrack> const& tracks = reader.getTracks(source, event);
-    std::vector<MCTrack> const& tracks = reader.getTracks(event);
-
-    // analyse tracks
-    for (auto& t : tracks) {
-      // analyse tracks; fetch mother track of each track (in the pool of all tracks)
-      auto mother = o2::mcutil::MCTrackNavigator::getMother(t, tracks);
-      if (mother) {
-        std::cout << "This track has a mother"<<std::endl;;
-      }
-      // fetch the (backward first) primary particle from which this track derives
-      auto primary = o2::mcutil::MCTrackNavigator::getFirstPrimary(t, tracks);
-      }
-  }
-  return 0;
-  */
 
  // TODO: do this on hyperloop
 
  // Jpsi = 443
  // Bc+ = 541
 
+
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
-  TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,3.095,3.099);
-  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,0,10);
+  TH1F *hDiMuonTRUEMass = new TH1F("hDiMuonTRUEMass","Di-muon TRUE mass [GeV]",100,3.095,3.099);
+  TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,0,10);
+  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,2,4.5);
   TH1F *hDiMuonMatchedMass = new TH1F("hDiMuonMatchedMass","Di-muon matched < 10.0 mass [GeV]",100,0,10);
   TH1F *hDiMuonVxDiff = new TH1F("hDiMuonVxDiff","Di-muon vx difference of pairs",100,-11,11);
+
+
   Int_t trackId = 0;
-  Int_t nJpsi = 0;
-  Int_t nMuon = 0;
-  Int_t nAntiMuon = 0;
-  Int_t candMuonP,candMuonM;
+  Int_t nJpsi=0;Int_t nMuon=0;Int_t nAntiMuon=0;
+  Int_t nMisId=0;
   Int_t particlePdgCode,motherTrackId,motherPdgCode,triggerMotherTrackId,associatePdgCode,associateMotherTrackId,associateMotherPdgCode;
   Int_t firstDaughterTrackId,firstDaughterPdgCode;
   Int_t lastDaughterTrackId,lastDaughterPdgCode;
   Double_t pT,eta,triggerVx,triggerVy,triggerVz,associateVx,associateVy,associateVz;
-  Double_t candMuonPVx,candMuonMVx;
-  TLorentzVector candMuonP4P,candMuonM4P;
 
 
-  Double_t VxCut = 0.001; // cut on di-muon production vertex
+  Double_t VxCut = 0.1; // cut on di-muon production vertex
+  Double_t lowMassCut = 2.5; // jpsi mass cuts on dimuon matching
+  Double_t highMassCut = 4.0;
+
+
+  // optional misID setting
+  // probability can be adjusted
+  Double_t misIdProb = 0.001; // 0.1% misid chance
+  TRandom3 randGen;
+  randGen.SetSeed(0);
 
 
   TFile inputKine("JpsiStudies/1e3_o2sim_Kine.root","READ");
@@ -83,14 +70,11 @@ int readKinematics() {
 
       tree->GetEntry(ev);
       // std::cout<<"NEXT EVENT"<<std::endl<<std::endl;
-      candMuonP = 0;
-      candMuonM = 0;
-      candMuonPVx = 999999;
-      candMuonMVx = -999999;
 
 
       for (auto& track : *tracks) {
 
+        
         trackId++;
 
         // if (!isFinalState(&track)) { continue; }
@@ -120,6 +104,12 @@ int readKinematics() {
         // std::cout<<"pdg code = "<<particlePdgCode<<std::endl;
 
 
+        // Muon misId initialisation
+        Double_t randomValue = randGen.Uniform(0.0, 1.0);
+        Int_t triggerDetectorPdgCode = 13; // muon
+        Int_t associateDetectorPdgCode = -13; // anti-muon
+
+
         // for testing only
         /*
         if (particlePdgCode == 3322) { // xi0
@@ -134,16 +124,6 @@ int readKinematics() {
 
         /*
         if (particlePdgCode == 3122) { // lambda
-          std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
-          std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
-          // std::cout<<"me = "<<particlePdgCode<<std::endl;
-          // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
-        }
-        */
-
-
-        /*
-        if (particlePdgCode == 111) { // pi0
           std::cout<<"firstDaughter = "<<firstDaughterPdgCode<<std::endl;
           std::cout<<"lastDaughter = "<<lastDaughterPdgCode<<std::endl<<std::endl;
           // std::cout<<"me = "<<particlePdgCode<<std::endl;
@@ -181,7 +161,7 @@ int readKinematics() {
         }
 
 
-        // NOTE: seems like there is misID effects, sometimes coupling gives e.g. an eta->mumu
+        // MC TRUE dimuon matching
         if (particlePdgCode == 13) { // mu-
           nMuon++;
           TLorentzVector trigger4P;
@@ -210,16 +190,63 @@ int readKinematics() {
                 TLorentzVector dimuon4P = trigger4P+associate4P;
                 Double_t dimuonM = dimuon4P.M();
                 std::cout<<"Di-muon mass = "<<dimuonM<<std::endl;
-                hDiMuonMass->Fill(dimuonM);
+                hDiMuonTRUEMass->Fill(dimuonM);
               }
-              if (abs(triggerVx - associateVx) < VxCut) {
+            }
+          }
+        } // end of 'TRUE' di-muon coupling
+
+
+        if (randomValue < misIdProb) { 
+          nMisId++;
+          triggerDetectorPdgCode = -211; 
+          associateDetectorPdgCode = 211;
+        } // pion misID
+
+        // Muon matching with potential detector effects included
+        // NOTE: seems like there is misID effects, sometimes coupling gives e.g. an eta->mumu
+        if (particlePdgCode == triggerDetectorPdgCode) { // mu-
+          TLorentzVector trigger4P;
+          track.Get4Momentum(trigger4P);
+          // std::cout<<"me = "<<particlePdgCode<<std::endl;
+          // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
+          for (auto& track : *tracks) { // couple with mu+ now
+            associatePdgCode = track.GetPdgCode();
+            associateMotherTrackId = track.getMotherTrackId();
+            const o2::MCTrack& associateMotherTrack = (*tracks)[associateMotherTrackId];
+            associateMotherPdgCode = motherTrack.GetPdgCode();
+            // std::cout<<"associateMother = "<<associateMother<<std::endl;
+            if (associatePdgCode == associateDetectorPdgCode) { // mu+
+              TLorentzVector associate4P;
+              associateVx = track.Vx();
+              associateVy = track.Vy();
+              associateVz = track.Vz();
+              if (associateMotherTrackId == motherTrackId) { // true dimuon pair found
+                std::cout<<"me = "<<associatePdgCode<<std::endl;
+                std::cout<<"my mom = "<<associateMotherPdgCode<<std::endl;
+                std::cout<<"and my trigger mom = "<<motherPdgCode<<std::endl;
+                std::cout<<"my trigger production coordinates = "<<"("<<triggerVx<<","<<triggerVy<<","<<triggerVz<<")"<<std::endl<<std::endl;
+                std::cout<<"my associate production coordinates = "<<"("<<associateVx<<","<<associateVy<<","<<associateVz<<")"<<std::endl<<std::endl;
                 track.Get4Momentum(associate4P);
                 TLorentzVector dimuon4P = trigger4P+associate4P;
                 Double_t dimuonM = dimuon4P.M();
-                // std::cout<<"candidate matching mass = "<<dimuonM<<std::endl<<std::endl;
-                hDiMuonCandMass->Fill(dimuonM);
+                std::cout<<"Di-muon mass = "<<dimuonM<<std::endl;
+                hDiMuonMass->Fill(dimuonM);
               }
-              if (abs(triggerVx - associateVx) < 10.0) {
+              if (abs(triggerVx - associateVx) < VxCut) { // matching of dimuon candidates
+                track.Get4Momentum(associate4P);
+                TLorentzVector dimuon4P = trigger4P+associate4P;
+                Double_t dimuonM = dimuon4P.M();
+                std::cout<<"candidate matching mass = "<<dimuonM<<std::endl;
+                if (dimuonM < 2) {
+                  std::cout<<"trigger mom = "<<motherPdgCode<<std::endl;
+                  std::cout<<"trigger mom track id = "<<motherTrackId<<std::endl;
+                  std::cout<<"associate mom = "<<associateMotherPdgCode<<std::endl;
+                  std::cout<<"associate mom track id = "<<associateMotherTrackId<<std::endl<<std::endl;
+                }
+                if (dimuonM > lowMassCut && dimuonM < highMassCut) { hDiMuonCandMass->Fill(dimuonM); }
+              }
+              if (abs(triggerVx - associateVx) < 10.0) { // "minimum bias"
                 track.Get4Momentum(associate4P);
                 TLorentzVector dimuon4P = trigger4P+associate4P;
                 Double_t dimuonM = dimuon4P.M();
@@ -229,38 +256,7 @@ int readKinematics() {
               }
             }
           }
-        } // end of TRUE di-muon coupling
-
-
-        /*
-        // now try to match muons using only the vertex information
-        // TODO: improve method: it wont find every pair in the event
-        if (particlePdgCode == 13) { // mu+ identified in detector
-          candMuonPVx = track.Vx();
-          track.Get4Momentum(candMuonP4P);
-          // candMuonVy = track.Vy();
-          // candMuonVz = track.Vz();
-        }
-
-        if (particlePdgCode == -13) { // mu- identified in same event
-          candMuonMVx = track.Vx();
-          track.Get4Momentum(candMuonM4P);
-        }
-
-        if (abs(candMuonPVx - candMuonMVx) < VxCut) {
-          TLorentzVector dimuon4P = candMuonP4P + candMuonM4P;
-          Double_t dimuonM = dimuon4P.M();
-          // std::cout<<"candidate matching mass = "<<dimuonM<<std::endl<<std::endl;
-          // hDiMuonCandMass->Fill(dimuonM);
-        }
-        if (abs(candMuonPVx - candMuonMVx) < 10.0) {
-          TLorentzVector dimuon4P = candMuonP4P + candMuonM4P;
-          Double_t dimuonM = dimuon4P.M();
-          // std::cout<<"candidate fake mass = "<<dimuonM<<std::endl<<std::endl;
-          // hDiMuonMatchedMass->Fill(dimuonM);
-          // hDiMuonVxDiff->Fill(candMuonPVx-candMuonMVx);
-        }
-        */
+        } // end of 'normal' di-muon coupling
 
 
       } // end of tracks
@@ -272,8 +268,12 @@ int readKinematics() {
   std::cout<<"Number of jpsi found = "<<nJpsi<<std::endl;
   std::cout<<"Number of muons found = "<<nMuon<<std::endl;
   std::cout<<"Number of di-muons found = "<<nAntiMuon<<std::endl;
+  std::cout<<"Number of misIds found = "<<nMisId<<std::endl;
+
+
   TFile outputFile("JpsiStudies/output.root", "RECREATE");
   hID->Write();
+  hDiMuonTRUEMass->Write();
   hDiMuonMass->Write();
   hDiMuonCandMass->Write();
   hDiMuonMatchedMass->Write();
