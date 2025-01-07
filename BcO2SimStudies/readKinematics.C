@@ -27,15 +27,21 @@ int readKinematics() {
 
 
   TH1F *hID = new TH1F("hID","PDG ID for track",20000,-10000,10000);
+  TH1F *hPtJpsi = new TH1F("hPtJpsi","Pt spectrum jpsi",100,0,10);
+  TH1F *hPtPromptJpsi = new TH1F("hPtPromptJpsi","Pt spectrum prompt jpsi",100,0,10);
+  TH1F *hPtNonPromptJpsi = new TH1F("hPtNonPromptJpsi","Pt spectrum non-prompt jpsi",100,0,10);
+  TH1F *hVxJpsi = new TH1F("hVxJpsi","Vx for jpsi",100,-10,10);
+  TH1F *hVxPromptJpsi = new TH1F("hVxPromptJpsi","Vx for prompt jpsi",100,-10,10);
+  TH1F *hVxNonPromptJpsi = new TH1F("hVxNonPromptJpsi","Vx for non-prompt jpsi",100,-10,10);
   TH1F *hDiMuonTRUEMass = new TH1F("hDiMuonTRUEMass","Di-muon TRUE mass [GeV]",100,3.095,3.099);
   TH1F *hDiMuonMass = new TH1F("hDiMuonMass","Di-muon mass [GeV]",100,0,10);
-  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,2,4.5);
+  TH1F *hDiMuonCandMass = new TH1F("hDiMuonCandMass","Di-muon candidate mass [GeV]",100,2.0,4.5);
   TH1F *hDiMuonMatchedMass = new TH1F("hDiMuonMatchedMass","Di-muon matched < 10.0 mass [GeV]",100,0,10);
   TH1F *hDiMuonVxDiff = new TH1F("hDiMuonVxDiff","Di-muon vx difference of pairs",100,-11,11);
 
 
   Int_t trackId = 0;
-  Int_t nJpsi=0;Int_t nMuon=0;Int_t nAntiMuon=0;
+  Int_t nJpsi=0;Int_t nPromptJpsi=0;Int_t nNonPromptJpsi=0;Int_t nMuon=0;Int_t nAntiMuon=0;
   Int_t nMisId=0;
   Int_t particlePdgCode,motherTrackId,motherPdgCode,triggerMotherTrackId,associatePdgCode,associateMotherTrackId,associateMotherPdgCode;
   Int_t firstDaughterTrackId,firstDaughterPdgCode;
@@ -50,12 +56,12 @@ int readKinematics() {
 
   // optional misID setting
   // probability can be adjusted
-  Double_t misIdProb = 0.001; // 0.1% misid chance
+  Double_t misIdProb = 0.01; // 1% misid chance
   TRandom3 randGen;
   randGen.SetSeed(0);
 
 
-  TFile inputKine("JpsiStudies/1e3_o2sim_Kine.root","READ");
+  TFile inputKine("JpsiStudies/1e5_o2sim_Kine.root","READ");
   auto tree = (TTree*)inputKine.Get("o2sim");
   std::vector<o2::MCTrack>* tracks{};
   tree->SetBranchAddress("MCTrack", &tracks);
@@ -64,6 +70,7 @@ int readKinematics() {
   // TO DO 
   // ADD RANDOM COMBINATIONS OF MUONS (OR SEMI-RANDOM) OR AT LEAST MOTIVATED BY EXPERIMENT 
   // (e.g. similar origin vertex, etc.)
+
 
   for (int ev = 0; ev < tree->GetEntries(); ++ev) {
 
@@ -135,12 +142,12 @@ int readKinematics() {
         if (particlePdgCode == 541) { // bc+
           // std::cout<<"firstDaughter Bc+ = "<<firstDaughterPdgCode<<std::endl;
           // std::cout<<"lastDaughter Bc+ = "<<lastDaughterPdgCode<<std::endl<<std::endl;
-          for (int daughterTrackId = firstDaughterTrackId; daughterTrackId <= lastDaughterTrackId; ++daughterTrackId) {
-            const o2::MCTrack& daughterTrack = (*tracks)[daughterTrackId];
-            int daughterPdgCode = daughterTrack.GetPdgCode();
-            std::cout << "Bc+ Daughter PDG: " << daughterPdgCode << std::endl;
-          }
-          std::cout<<std::endl;
+          // for (int daughterTrackId = firstDaughterTrackId; daughterTrackId <= lastDaughterTrackId; ++daughterTrackId) {
+            // const o2::MCTrack& daughterTrack = (*tracks)[daughterTrackId];
+            // int daughterPdgCode = daughterTrack.GetPdgCode();
+            // std::cout << "Bc+ Daughter PDG: " << daughterPdgCode << std::endl;
+          // }
+          // std::cout<<std::endl;
           // std::cout<<"me = "<<particlePdgCode<<std::endl;
           // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
         }
@@ -148,14 +155,26 @@ int readKinematics() {
 
         if (particlePdgCode == 443) { // Jpsi (use code == 2212 (proton) for non-prompt/prompt distinction)
           nJpsi++;
+          hPtJpsi->Fill(pT);
+          hVxJpsi->Fill(triggerVx);
+          if (track.isPrimary()) { 
+            nPromptJpsi++;
+            hPtPromptJpsi->Fill(pT);
+            hVxPromptJpsi->Fill(triggerVx); 
+          }
+          if (track.isSecondary()) { 
+            nNonPromptJpsi++;
+            hPtNonPromptJpsi->Fill(pT);
+            hVxNonPromptJpsi->Fill(triggerVx);
+          }
           // std::cout<<"firstDaughter Jpsi = "<<firstDaughterPdgCode<<std::endl;
           // std::cout<<"lastDaughter Jpsi = "<<lastDaughterPdgCode<<std::endl<<std::endl;
-          for (int daughterTrackId = firstDaughterTrackId; daughterTrackId <= lastDaughterTrackId; ++daughterTrackId) {
-            const o2::MCTrack& daughterTrack = (*tracks)[daughterTrackId];
-            int daughterPdgCode = daughterTrack.GetPdgCode();
-            std::cout << "Jpsi Daughter PDG: " << daughterPdgCode << std::endl;
-          }
-          std::cout<<std::endl;
+          // for (int daughterTrackId = firstDaughterTrackId; daughterTrackId <= lastDaughterTrackId; ++daughterTrackId) {
+            // const o2::MCTrack& daughterTrack = (*tracks)[daughterTrackId];
+            // int daughterPdgCode = daughterTrack.GetPdgCode();
+            // std::cout << "Jpsi Daughter PDG: " << daughterPdgCode << std::endl;
+          // }
+          // std::cout<<std::endl;
           // std::cout<<"me = "<<particlePdgCode<<std::endl;
           // std::cout<<"my mom = "<<motherPdgCode<<std::endl<<std::endl;
         }
@@ -265,7 +284,10 @@ int readKinematics() {
     } // end of event
 
 
+  std::cout<<"Analysed "<<tree->GetEntries()<<" events"<<std::endl;
   std::cout<<"Number of jpsi found = "<<nJpsi<<std::endl;
+  std::cout<<"Number of prompt jpsi found = "<<nPromptJpsi<<std::endl;
+  std::cout<<"Number of non-prompt jpsi found = "<<nNonPromptJpsi<<std::endl;
   std::cout<<"Number of muons found = "<<nMuon<<std::endl;
   std::cout<<"Number of di-muons found = "<<nAntiMuon<<std::endl;
   std::cout<<"Number of misIds found = "<<nMisId<<std::endl;
@@ -273,6 +295,12 @@ int readKinematics() {
 
   TFile outputFile("JpsiStudies/output.root", "RECREATE");
   hID->Write();
+  hPtJpsi->Write();
+  hPtPromptJpsi->Write();
+  hPtNonPromptJpsi->Write();
+  hVxJpsi->Write();
+  hVxPromptJpsi->Write();
+  hVxNonPromptJpsi->Write();
   hDiMuonTRUEMass->Write();
   hDiMuonMass->Write();
   hDiMuonCandMass->Write();
