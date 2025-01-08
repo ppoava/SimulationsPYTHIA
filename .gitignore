@@ -7,4 +7,4 @@ o2sim_mergerlog
 o2sim_serverlog
 o2sim_workerlog0
 BcO2FullSimStudies
-!BcO2FullSimStudies/test.sh
+!BcO2FullSimStudies/Tests/test.sh
